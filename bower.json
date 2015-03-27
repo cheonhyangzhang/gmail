@@ -1,0 +1,24 @@
+{
+  "name": "gmail",
+  "version": "0.1",
+  "homepage": "https://github.com/cheonhyangzhang/gmail",
+  "authors": [
+    "Tianxiang Zhang cenhiangapply@gmail.com"
+  ],
+  "description": "A mockup web app using Polymer framework ( or library )",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.5",
+    "core-icon": "Polymer/core-icon#~0.5.5",
+    "core-elements": "Polymer/core-elements#~0.5.5",
+    "paper-elements": "Polymer/paper-elements#~0.5.5"
+  }
+}
