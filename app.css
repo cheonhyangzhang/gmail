@@ -21,16 +21,14 @@ core-drawer-panel:not[narrow] drawer{
 }
 
 
-core-list{
-}
 
 core-list .row{
 	height:80px;
 	background-color: white;
 	padding:16px;
 	-webkit-box-shadow: 0px 0.5px 1px 0.5px rgba(0,0,0,0.75);
--moz-box-shadow: 0px 0.5px 1px 0.5px rgba(0,0,0,0.75);
-box-shadow: 0px 0.5px 1px 0.5px rgba(0,0,0,0.75);
+	-moz-box-shadow: 0px 0.5px 1px 0.5px rgba(0,0,0,0.75);
+	box-shadow: 0px 0.5px 1px 0.5px rgba(0,0,0,0.75);
 }
 
 
