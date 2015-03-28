@@ -6,15 +6,12 @@
 box-shadow: 0.5px 0px 1px 0.5px rgba(0,0,0,0.75);
 }
 [main]{
-	/*background-color:#f5f5f5;*/
 	background-color:#f5f5f5;
 	padding:20px;
 }
 
 core-drawer-panel:not[narrow] drawer{
 }
-
-
 .avatar{
 	width:40px;
 	height:40px;

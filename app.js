@@ -109,7 +109,7 @@ app.onSigninSuccess = function(e, detail, sender) {
 	gapi.client.load('gmail', 'v1').then(function() {
 		console.log("Loaded gmail")
 		var gmail = gapi.client.gmail.users;
-		app.refreshInbox();
+		// app.refreshInbox();
 
 		// gmail.labels.list({userId: 'me'}).then(function(resp) {
 		//   // Don't include system labels.
@@ -129,24 +129,26 @@ app.onSigninSuccess = function(e, detail, sender) {
 		// });
 	});
 
-	// gapi.client.load('plus', 'v1').then(function() {
+	gapi.client.load('plus', 'v1').then(function() {
 
 	// 	// Get user's profile pic, cover image, email, and name.
-	// 	gapi.client.plus.people.get({userId: 'me'}).then(function(resp) {
-	// 		console.log("Get me in plus");
-	// 		console.log(resp);
-	// 	  // var PROFILE_IMAGE_SIZE = 75;
+		gapi.client.plus.people.get({userId: 'me'}).then(function(resp) {
+			console.log("Get me in plus");
+			console.log(resp);
+		  var PROFILE_IMAGE_SIZE = 40;
 	// 	  // var COVER_IMAGE_SIZE = 315;
 
-	// 	  // var img = resp.result.image && resp.result.image.url.replace(/(.+)\?sz=\d\d/, "$1?sz=" + PROFILE_IMAGE_SIZE);
+		  var img = resp.result.image && resp.result.image.url.replace(/(.+)\?sz=\d\d/, "$1?sz=" + PROFILE_IMAGE_SIZE);
 	// 	  // var coverImg = resp.result.cover && resp.result.cover.coverPhoto.url.replace(/\/s\d{3}-/, "/s" + COVER_IMAGE_SIZE + "-");
 
-	// 	  // app.user = {
-	// 	  //   name: resp.result.displayName,
-	// 	  //   email: resp.result.emails[0].value,
-	// 	  //   profile: img || null,
+		  app.user = {
+		    name: resp.result.displayName,
+		    email: resp.result.emails[0].value,
+		    profile_image: img
 	// 	  //   cover: coverImg || null
-	// 	  // };
+		  };
+		  console.log("app.user");
+		  console.log(app.user);
 
 	// 	  // app.$['navheaderstyle'].coverImg = coverImg;
 	// 	  // app.$.navheader.classList.add('coverimg');
@@ -158,28 +160,12 @@ app.onSigninSuccess = function(e, detail, sender) {
 	// 	  //   app.users[app.user.name] = app.user.profile; // signed in user.
 	// 	  // });
 
-	// 	});//plus me
+		});//plus me
 
- //  	});//load plus
+  	});//load plus
 
 };//onSuccessLogin
 
 
-app.data = [
-{'name':'frank'},
-{'name':'ava'},
-{'name':'frank'},
-{'name':'ava'},
-{'name':'frank'},
-{'name':'ava'},
-{'name':'frank'},
-{'name':'ava'},
-{'name':'frank'},
-{'name':'ava'},
-{'name':'frank'},
-{'name':'ava'},
-{'name':'frank'},
-{'name':'ava'},
-]
 
 

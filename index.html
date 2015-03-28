@@ -40,12 +40,13 @@
                       <core-toolbar class="toolbar-smaller">
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
-                        <div> {{heading}} </div>
-                        <google-signin width="wide" height="tall"
+                        <div flex> {{heading}}</div>
+                        <core-image class="avatar" src="{{user.profile_image}}"></core-image>
+<!--                         <google-signin width="wide" height="tall"
                           clientId="734681955886-tfnfanpm9kqt60lvjrjqj9mc6emv80qa.apps.googleusercontent.com"
                           scopes="profile email https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/gmail.modify"
                           on-google-signin-success="{{onSigninSuccess}}"
-                          on-google-signin-failure="{{onSigninFailure}}"></google-signin>
+                          on-google-signin-failure="{{onSigninFailure}}"></google-signin> -->
                       </core-toolbar>
 
 
