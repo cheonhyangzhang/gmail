@@ -13,56 +13,77 @@
 
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
     <link rel="import" href="elements.html">
-    <!-- <link rel="import" href="routes.html"> -->
+    <link rel="import" href="route.html">
     <link rel="stylesheet" href="app.css">
 
     <title>Gmail</title>
   </head>
 
   <body fullbleed layout vertical fit>
+
+
     <template is="auto-binding" id="app">
-          <core-header-panel flex>
-          <core-toolbar >
-            <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
-            </paper-icon-button> 
-            <div> {{heading}} </div>
-          </core-toolbar>
-
-
-
-
-          <core-drawer-panel id="drawerPanel" >
-
-            <core-header-panel drawer id="menu">
-                <core-menu class="menu">
-                    <paper-item><core-icon class="blue" icon="mail"></core-icon> Inbox</paper-item>
-                    <div class="separator"></div>
-                    <paper-item><core-icon icon="star"></core-icon> Starred</paper-item>
-                    <paper-item><core-icon icon="turned-in"></core-icon> Important</paper-item>
-                    <paper-item><core-icon icon="drafts"></core-icon> Drafts</paper-item>
-                    <paper-item><core-icon icon="send"></core-icon> Sent</paper-item>
-                </core-menu>
-            </core-header-panel> 
-
-            <core-header-panel main flex>
-              <core-list  style="min-height:360px;" data="{{data}}" flex>
-              <template>
-                <div class="row" layout horizontal center flex>
-                  <div style="background-color:#ffffff;">
-                    <div>{{model.name}}</div>
-                    <div class="separator"></div>
+      <more-route-selector>
+            <core-pages selected="{{route}}" fullbleed fit layout vertical>
+              <section route="login" >
+                  <div id="loginscreen" layout vertical center-center fit
+                     class="{{ {show: !isAuthenticated} | tokenList }}">
+                  <google-signin width="wide" height="tall"
+                      clientId="734681955886-tfnfanpm9kqt60lvjrjqj9mc6emv80qa.apps.googleusercontent.com"
+                      scopes="profile email https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/gmail.modify"
+                      on-google-signin-success="{{onSigninSuccess}}"
+                      on-google-signin-failure="{{onSigninFailure}}"></google-signin>
                   </div>
-                </div>
-              </template>
-            </core-list>
-           
+              </section>
+              <section route="inbox" fullbleed fit layout vertical>
+                    <core-header-panel flex>
+                      <core-toolbar class="toolbar-smaller">
+                        <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
+                        </paper-icon-button> 
+                        <div> {{heading}} </div>
+                      </core-toolbar>
 
 
 
-            </core-header-panel>
-          </core-drawer-panel>
 
-        </core-header-panel>
+                      <core-drawer-panel id="drawerPanel" >
+
+                        <core-header-panel drawer id="menu">
+                            <core-menu class="menu">
+                                <paper-item><core-icon class="blue" icon="mail"></core-icon> Inbox</paper-item>
+                                <div class="separator"></div>
+                                <paper-item><core-icon icon="star"></core-icon> Starred</paper-item>
+                                <paper-item><core-icon icon="turned-in"></core-icon> Important</paper-item>
+                                <paper-item><core-icon icon="drafts"></core-icon> Drafts</paper-item>
+                                <paper-item><core-icon icon="send"></core-icon> Sent</paper-item>
+                            </core-menu>
+                        </core-header-panel> 
+
+                        <core-header-panel main flex>
+                          <core-list  style="min-height:360px;" data="{{data}}" flex>
+                          <template>
+                            <div class="row" layout horizontal center flex>
+
+                              <div style="background-color:#ffffff;">
+                                <div>{{model.name}}</div>
+                              </div>
+                            </div>
+                          </template>
+                        </core-list>
+                       
+
+
+
+                        </core-header-panel>
+                      </core-drawer-panel>
+
+                    </core-header-panel>
+              </section>
+            </core-pages>
+      </more-route-selector>
+
+
+        
     </template>
 
   </body>
