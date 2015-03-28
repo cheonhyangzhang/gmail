@@ -41,6 +41,11 @@
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
                         <div> {{heading}} </div>
+                        <google-signin width="wide" height="tall"
+                          clientId="734681955886-tfnfanpm9kqt60lvjrjqj9mc6emv80qa.apps.googleusercontent.com"
+                          scopes="profile email https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/gmail.modify"
+                          on-google-signin-success="{{onSigninSuccess}}"
+                          on-google-signin-failure="{{onSigninFailure}}"></google-signin>
                       </core-toolbar>
 
 
@@ -60,12 +65,14 @@
                         </core-header-panel> 
 
                         <core-header-panel main flex>
-                          <core-list  style="min-height:360px;" data="{{data}}" flex>
+                          {{threads}}
+                          <core-list  style="min-height:360px;" data="{{threads}}" flex>
                           <template>
                             <div class="row" layout horizontal center flex>
-
+                              <template if="{{model.messages}}">
+                                    <div>{{messages.length}}</div>
+                              </template>
                               <div style="background-color:#ffffff;">
-                                <div>{{model.name}}</div>
                               </div>
                             </div>
                           </template>
@@ -88,5 +95,6 @@
 
   </body>
 
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
     <script src="app.js"></script>
 </html>
