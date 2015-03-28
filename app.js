@@ -141,7 +141,7 @@ app.onSigninSuccess = function(e, detail, sender) {
 		console.log("Loaded gmail")
 		var gmail = gapi.client.gmail.users;
 		app.refreshInbox();
-
+		app.route='inbox';
 		// gmail.labels.list({userId: 'me'}).then(function(resp) {
 		//   // Don't include system labels.
 		//   // console.log(resp);
