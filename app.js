@@ -4,11 +4,14 @@ DEBUG = false;
 var app = document.querySelector('#app');
 app.heading = 'Gmail Inbox';
 app.page = 'login';
+app.main_page = 0;
 
 var Labels = {
   UNREAD: 'UNREAD',
   STARRED: 'STARRED'
 };
+
+
 
 var FROM_HEADER_REGEX = new RegExp(/"?(.*?)"?\s?<(.*)>/);
 
@@ -90,7 +93,6 @@ app.fetchMail = function(q, opt_callback) {
 				// {'name':'Scrolled Up','historyId':'23554'},
 				// {'name':'What the hell','historyId':'23554'}
 				// ];
-				console.log(app.threads);
 				opt_callback && opt_callback(threads);
 			}, 100);
 		});
@@ -121,7 +123,8 @@ function getAllUserProfileImages(users, nextPageToken, callback) {
 //refreshInbox fields
 app.refreshInbox = function(opt_callback) {
 	console.log("refreshInbox");
-  var q = 'in:inbox';
+  // var q = 'in:inbox';
+  var q = 'category:primary';
 
   if (opt_callback) {
     app.fetchMail(q, opt_callback.bind(this));
@@ -129,6 +132,52 @@ app.refreshInbox = function(opt_callback) {
     app.fetchMail(q);
   }
 };
+goback = function(backto){
+	console.log("goback");
+	app.main_page = 0;
+}
+viewEmail = function(index){
+	console.log("viewEmail : ");
+	app.main_page = 1;
+	app.back_content = "Inbox"
+	// console.log(index);
+	// console.log(app.threads[index]);
+	var thread = app.threads[index];
+	var lastest_id = thread.messages[0].id;
+  	var gmail = gapi.client.gmail.users;
+	 // Fetch only the emails in the user's inbox.
+	gmail.messages.get({userId: 'me', id:lastest_id, format:'full'}).then(function(resp) {
+		console.log("messages.get");
+		console.log(resp);
+		// console.log(resp.result.payload.body);
+	    app.email_subject = getValueForHeaderField(resp.result.payload.headers, 'Subject');
+	    var payload = resp.result.payload;
+	    console.log(payload);
+	  	// Only deal with one layer data for now
+
+	  	if ('parts' in payload && payload.parts[0].mimeType == 'text/plain'){
+	  	var body_str_encode = payload.parts[0].body.data;
+	  	var body_html_encode = payload.parts[1].body.data;
+	  	console.log(body_str_encode);
+	  	console.log(body_html_encode);
+	  	var body_str = atob(body_str_encode);
+	  	console.log(body_str);
+	  	// var body_html = atob(body_html_encode);
+	  	// console.log(body_html);
+
+	    // console.log("Retrieve data");
+	    // console.log(parent);
+	    // console.log(payload);
+	    // var html_data = parent.parts[1].body.data;
+	    // app.email_body = atob(payload.body.data) || "";
+	    // app.email_body = urlSafeBase64Decode(html_data);
+	    // body_str = body_str.replace("\n", "<br />");
+	    app.email_body = body_str;
+		}
+	    // console.log(app.email_subject);
+	    // console.log(app.email_body);
+	});
+}
 
 app.onSigninSuccess = function(e, detail, sender) {
 	this.isAuthenticated = true;
@@ -141,7 +190,6 @@ app.onSigninSuccess = function(e, detail, sender) {
 		console.log("Loaded gmail")
 		var gmail = gapi.client.gmail.users;
 		app.refreshInbox();
-		app.route='inbox';
 		// gmail.labels.list({userId: 'me'}).then(function(resp) {
 		//   // Don't include system labels.
 		//   // console.log(resp);
@@ -189,7 +237,6 @@ app.onSigninSuccess = function(e, detail, sender) {
 		  getAllUserProfileImages(users, null, function(users) {
 		    app.users = users;
 		    app.users[app.user.name] = app.user.profile; // signed in user.
-		    console.log(app.users);
 		  });
 
 		});//plus me
