@@ -11,6 +11,14 @@ var Labels = {
   STARRED: 'STARRED'
 };
 
+var labels_search = {
+	'INBOX':'category:primary || label:important',
+	'STARRED':'label:starred',
+	'IMPORTANT':'label:important',
+	'DRAFTS':'label:drafts',
+	'SENT':'label:sent'
+}
+
 
 
 var FROM_HEADER_REGEX = new RegExp(/"?(.*?)"?\s?<(.*)>/);
@@ -68,12 +76,15 @@ function processMessage(resp) {
   return messages;
 }
 
+var nextPageToken = ""
 app.fetchMail = function(q, opt_callback) {
 	console.log("fetchMail");	
   	var gmail = gapi.client.gmail.users;
+  	console.log(gmail);
 	 // Fetch only the emails in the user's inbox.
-	gmail.threads.list({userId: 'me', q: q, 'maxResults':20}).then(function(resp) {
+	gmail.threads.list({userId: 'me', q: q, 'maxResults':10}).then(function(resp) {
 	// gmail.threads.list({userId: 'me', q: q}).then(function(resp) {
+	console.log(threads);
     var threads = resp.result.threads;
     // console.log("threads");
     // console.log(threads);
@@ -124,7 +135,7 @@ function getAllUserProfileImages(users, nextPageToken, callback) {
 app.refreshInbox = function(opt_callback) {
 	console.log("refreshInbox");
   // var q = 'in:inbox';
-  var q = 'category:primary';
+  var q = 'category:primary || label:important';
 
   if (opt_callback) {
     app.fetchMail(q, opt_callback.bind(this));
@@ -132,11 +143,41 @@ app.refreshInbox = function(opt_callback) {
     app.fetchMail(q);
   }
 };
+
+refreshEmails = function(label){
+	var q = labels_search[label];
+	app.fetchMail(q);
+}
 goback = function(backto){
 	console.log("goback");
 	app.main_page = 0;
 }
+base64decode = function(data, callback){
+	console.log("base64decode");
+	var urlto = "http://frank-util.appspot.com/basecode64/decode";
+	console.log(urlto);
+	console.log(data);
+	$.ajax({
+		type : "POST",
+		data:{encoded:data, callback:"JSON_CALLBACK"},
+		url:urlto,
+		// jsonpCallback: "JSON_CALLBACK",
+		dataType: "jsonp",
+		success:function(result){
+			console.log("result");	
+			console.log(result);
+			callback(result);
+		},
+		error: function(e){
+			console.log("error");
+			console.log(e);
+		}
+
+	});
+}
 viewEmail = function(index){
+	app.email_subject = "";
+	app.email_body = "";
 	console.log("viewEmail : ");
 	app.main_page = 1;
 	app.back_content = "Inbox"
@@ -151,31 +192,44 @@ viewEmail = function(index){
 		console.log(resp);
 		// console.log(resp.result.payload.body);
 	    app.email_subject = getValueForHeaderField(resp.result.payload.headers, 'Subject');
-	    var payload = resp.result.payload;
-	    console.log(payload);
-	  	// Only deal with one layer data for now
+	    app.email_body = "";
+	    // var payload = resp.result.payload;
+	    var payloads = [];
+	    payloads.push(resp.result.payload);
+	   	while(payloads.length > 0){
+	   		var payload = payloads.shift();
+	   		if (payload.body.size != 0){
+		    	body_str = Base64.decode(payload.body.data);
+		    	body_holder = document.getElementById('body_holder');
+				body_holder.innerHTML = body_str;
+		    }
+		    else{
+			    if (payload.mimeType == "multipart/alternative"){
+			    	console.log("multipart/alternative");
+			    	// console.log(payload);
+			    	console.log(payload.parts[1].body.data);
 
-	  	if ('parts' in payload && payload.parts[0].mimeType == 'text/plain'){
-	  	var body_str_encode = payload.parts[0].body.data;
-	  	var body_html_encode = payload.parts[1].body.data;
-	  	console.log(body_str_encode);
-	  	console.log(body_html_encode);
-	  	var body_str = atob(body_str_encode);
-	  	console.log(body_str);
-	  	// var body_html = atob(body_html_encode);
-	  	// console.log(body_html);
-
-	    // console.log("Retrieve data");
-	    // console.log(parent);
-	    // console.log(payload);
-	    // var html_data = parent.parts[1].body.data;
-	    // app.email_body = atob(payload.body.data) || "";
-	    // app.email_body = urlSafeBase64Decode(html_data);
-	    // body_str = body_str.replace("\n", "<br />");
-	    app.email_body = body_str;
-		}
-	    // console.log(app.email_subject);
-	    // console.log(app.email_body);
+			    	// body_str = Base64.decode(payload.parts[1].body.data);
+			    	body_str = ""
+		    		body_str = Base64.decode(payload.parts[1].body.data)
+		    		// body_str = atob(payload.parts[1].body.data)
+		    		app.email_body = body_str;
+		    		body_holder = document.getElementById('body_holder');
+					body_holder.innerHTML = body_str;
+			    	console.log(body_str);
+			    	
+			    	// body_str = atob(payload.parts[1].body.data);
+			    }
+			    else{
+			    	if (payload.mimeType == "multipart/mixed"){
+			    		payloads = payloads.concat(payload.parts);
+			    	}
+			    	else{
+			    		alert("has not supported item");
+			    	}
+			    }
+			}
+	   	}//while  
 	});
 }
 

@@ -56,12 +56,12 @@
 
                         <core-header-panel drawer id="menu">
                             <core-menu class="menu">
-                                <paper-item><core-icon class="blue" icon="mail"></core-icon> Inbox</paper-item>
+                                <paper-item onclick="refreshEmails('INBOX')"><core-icon class="blue" icon="mail"></core-icon> Inbox</paper-item>
                                 <div class="separator"></div>
-                                <paper-item><core-icon icon="star"></core-icon> Starred</paper-item>
-                                <paper-item><core-icon icon="turned-in"></core-icon> Important</paper-item>
-                                <paper-item><core-icon icon="drafts"></core-icon> Drafts</paper-item>
-                                <paper-item><core-icon icon="send"></core-icon> Sent</paper-item>
+                                <paper-item onclick="refreshEmails('STARRED')"><core-icon icon="star"></core-icon> Starred</paper-item>
+                                <paper-item onclick="refreshEmails('IMPORTANT')"><core-icon icon="turned-in"></core-icon> Important</paper-item>
+                                <paper-item onclick="refreshEmails('DRAFTS')"><core-icon icon="drafts"></core-icon> Drafts</paper-item>
+                                <paper-item onclick="refreshEmails('SENT')"><core-icon icon="send"></core-icon> Sent</paper-item>
                             </core-menu>
                         </core-header-panel> 
                         <core-header-panel main flex layout vertical>
@@ -76,7 +76,7 @@
                                       <div layout vertical flex style="cursor:pointer;" onclick="viewEmail({{index}})">
                                         <div style="display:none;">{{index}}</div>
                                         <div style="padding-bottom:10px;font-weight: bold;">{{model.messages[0].from.name}}</div>
-                                        <div style="padding-bottom:10px;font-size:14px;font-weight: bold;">{{model.messages[0].subject}}</div>
+                                        <div style="padding-top:10xp;padding-bottom:15px;font-size:14px;font-weight: bold;">{{model.messages[0].subject}}</div>
                                         <div style="padding-bottom:5px;font-size:10px;">{{model.messages[0].snippet}}</div>
                                       </div>
                                   </div>
@@ -84,7 +84,7 @@
                               </core-list>
                             </section>
                             <section flex  >
-                                <core-header-panel style="min-height:400px;">
+                                <core-header-panel style="min-height:800px;">
                                   <core-toolbar class="toolbar-smaller dark-grey">
                                       <paper-button onclick="goback()">
                                         <core-icon icon="arrow-back" class="icon-with-text"></core-icon>
@@ -108,9 +108,12 @@
                                     {{email_subject}}
                                     </span>
                                   </div>
-                                  <div flex id="email-body-id" class="email-body">
-                                    {{email_body}}
+                                  <div flex id="email-body-id" class="email-body">  
+                                      <div id="body_holder">
+                                        body_holder
+                                      </div>
                                   </div>
+                                 
                                   
 
                                   </core-header-panel>
@@ -136,5 +139,7 @@
   </body>
 
     <script src="https://apis.google.com/js/client.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="base64.js"></script>
     <script src="app.js"></script>
 </html>
