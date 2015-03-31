@@ -5,12 +5,13 @@ var app = document.querySelector('#app');
 app.heading = 'Gmail Inbox';
 app.page = 'login';
 app.main_page = 0;
+app.threads = [];
 
 var Labels = {
   UNREAD: 'UNREAD',
   STARRED: 'STARRED'
 };
-
+var PROFILE_IMAGE_SIZE = 40;
 var labels_search = {
 	'INBOX':'category:primary || label:important',
 	'STARRED':'label:starred',
@@ -38,6 +39,8 @@ function getValueForHeaderField(headers, field) {
   return null;
 }
 
+SUBJECT_MAX_LENGTH = 60;
+
 function processMessage(resp) {
 	// console.log("Process Message");
   var messages = resp.result.messages;
@@ -50,7 +53,10 @@ function processMessage(resp) {
     m.date = date.toDateString().split(' ').slice(1, 3).join(' ');
     m.to = getValueForHeaderField(headers, 'To');
     m.subject = getValueForHeaderField(headers, 'Subject');
-
+    if (typeof(m.subject) != 'undefined' && m.subject.length > SUBJECT_MAX_LENGTH){
+    	// console.log(m.substring(0, SUBJECT_MAX_LENGTH));
+    	m.subject = m.subject.substring(0, SUBJECT_MAX_LENGTH) + "..."
+    }
     var fromHeaders = getValueForHeaderField(headers, 'From');
     var fromHeaderMatches = fromHeaders.match(FROM_HEADER_REGEX);
 
@@ -68,8 +74,12 @@ function processMessage(resp) {
     }
     m.from.name = m.from.name.split('@')[0]; // Ensure email is split.
 
+    m.from.initial = m.from.name[0]
+    // m.initial = m.from.name[0]
+
     m.unread = m.labelIds.indexOf(Labels.UNREAD) != -1;
     m.starred = m.labelIds.indexOf(Labels.STARRED) != -1;
+    console.log(m.from);
   }
 
   // console.log(messages);
@@ -82,10 +92,14 @@ app.fetchMail = function(q, opt_callback) {
   	var gmail = gapi.client.gmail.users;
   	console.log(gmail);
 	 // Fetch only the emails in the user's inbox.
-	gmail.threads.list({userId: 'me', q: q, 'maxResults':10}).then(function(resp) {
+	gmail.threads.list({userId: 'me', q: q, 'maxResults':5, 'nextPageToken':nextPageToken}).then(function(resp) {
 	// gmail.threads.list({userId: 'me', q: q}).then(function(resp) {
-	console.log(threads);
+		console.log(resp);
+	nextPageToken = resp.result.nextPageToken;
+	console.log('nextPageToken');
+	console.log(nextPageToken);
     var threads = resp.result.threads;
+	console.log(threads);
     // console.log("threads");
     // console.log(threads);
     var batch = gapi.client.newBatch();
@@ -118,7 +132,7 @@ function getAllUserProfileImages(users, nextPageToken, callback) {
   }).then(function(resp) {
 
     users = resp.result.items.reduce(function(o, v, i) {
-      o[v.displayName] = v.image.url;
+      o[v.displayName] = v.image.url.replace(/(.+)\?sz=\d\d/, "$1?sz=" + PROFILE_IMAGE_SIZE);
       return o;
     }, users);
 
@@ -268,7 +282,7 @@ app.onSigninSuccess = function(e, detail, sender) {
 		gapi.client.plus.people.get({userId: 'me'}).then(function(resp) {
 			// console.log("Get me in plus");
 			// console.log(resp);
-		  var PROFILE_IMAGE_SIZE = 40;
+		  
 	// 	  // var COVER_IMAGE_SIZE = 315;
 
 		  var img = resp.result.image && resp.result.image.url.replace(/(.+)\?sz=\d\d/, "$1?sz=" + PROFILE_IMAGE_SIZE);
