@@ -81,7 +81,13 @@
                                       </div>
                                   </div>
                                 </template>
+                                <div class="row"  layout horizontal >
+                                    
+                                </div>
                               </core-list>
+                               <core-menu hidden?="{{showmore}}" class="menu">
+                                  <paper-item horizontal center-justified layout onclick="getMoreEmails()"><core-icon icon="cloud-download"></core-icon> Get More </paper-item>
+                            </core-menu>
                             </section>
                             <section flex  >
                                 <core-header-panel style="min-height:800px;">

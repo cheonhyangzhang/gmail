@@ -5,6 +5,8 @@ var app = document.querySelector('#app');
 app.heading = 'Gmail Inbox';
 app.page = 'login';
 app.main_page = 0;
+app.threads = [];
+app.email_label = 'INBOX';
 
 var Labels = {
   UNREAD: 'UNREAD',
@@ -75,16 +77,18 @@ function processMessage(resp) {
   // console.log(messages);
   return messages;
 }
-
+app.showmore = true;
 var nextPageToken = ""
 app.fetchMail = function(q, opt_callback) {
+	app.showmore = true;
 	console.log("fetchMail");	
   	var gmail = gapi.client.gmail.users;
   	console.log(gmail);
 	 // Fetch only the emails in the user's inbox.
-	gmail.threads.list({userId: 'me', q: q, 'maxResults':10}).then(function(resp) {
+	gmail.threads.list({userId: 'me', q: q, 'maxResults':10, 'nextPageToken':nextPageToken}).then(function(resp) {
 	// gmail.threads.list({userId: 'me', q: q}).then(function(resp) {
 	console.log(threads);
+	nextPageToken = resp.result.nextPageToken;
     var threads = resp.result.threads;
     // console.log("threads");
     // console.log(threads);
@@ -97,8 +101,10 @@ app.fetchMail = function(q, opt_callback) {
 			//thread.archived = false;
 			// Set entire thread data at once, when it's all been processed.
 			app.job('addthreads', function() {
-				this.threads = threads;
+				this.threads = this.threads.concat(threads);
+				app.showmore = false;
 				console.log("job addthreads");
+				console.log(this.threads.length);
 				// this.threads =[
 				// {'name':'Fucked Up ','historyId':'234'},
 				// {'name':'Scrolled Up','historyId':'23554'},
@@ -147,6 +153,9 @@ app.refreshInbox = function(opt_callback) {
 refreshEmails = function(label){
 	var q = labels_search[label];
 	app.fetchMail(q);
+}
+getMoreEmails = function(){
+	refreshEmails(app.email_label);
 }
 goback = function(backto){
 	console.log("goback");
