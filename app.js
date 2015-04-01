@@ -1,35 +1,116 @@
 DEBUG = false;
+function nowSearchTerm(){
+	var today_time = new Date();
+	var tomorrow_time = new Date();
+	var dd = today_time.getDate();
+	var mm = today_time.getMonth()+1; //January is 0!
+	var yyyy = today_time.getFullYear();
 
+	var today = yyyy +'/' + mm + '/' + dd;	
+	tomorrow_time.setDate(today_time.getDate() + 1);
+	dd = tomorrow_time.getDate();
+	mm = tomorrow_time.getMonth()+1; //January is 0!
+	yyyy = tomorrow_time.getFullYear();
+	var tommorow = yyyy +'/' + mm + '/' + dd;	
+	var q = 'after:'+today+" "+"before:"+ tommorow+" !is:chats in:inbox";
+	console.log(q);
+	return q;
+}
+
+
+function labelCompare(a,b) {
+  if (a.name < b.name)
+     return -1;
+  if (a.name > b.name)
+    return 1;
+  return 0;
+}
 
 var app = document.querySelector('#app');
-app.heading = 'Inbox';
+app.labels_opened = true;
+app.alldone = false;
+app.heading = 'Today';
 app.loading = false;
 app.page = 'login';
 app.main_page = 0;
 app.threads = [];
 app.selectedemail = 0;
 app.selectedThread = null;
-app.list_q = "category:primary || label:important";
+app.selectedThreadId = null;
+app.lastTrashedThread = null;
+app.lastTrashedThreadId = null;
+app.movetofolder = null;
+// app.list_q = "category:primary || label:important";
+app.list_q = nowSearchTerm();
+app.labels = [];
+var gmail = null;
 var Labels = {
   UNREAD: 'UNREAD',
   STARRED: 'STARRED'
 };
 var PROFILE_IMAGE_SIZE = 30;
 var labels_search = {
-	'INBOX':'category:primary || label:important',
-	'STARRED':'label:starred',
-	'IMPORTANT':'label:important',
-	'DRAFTS':'label:drafts',
-	'SENT':'label:sent'
+	// 'INBOX':'category:primary || label:important !is:chats',
+	'INBOX':'label:inbox !is:chats',
+	'STARRED':'label:starred !is:chats',
+	'IMPORTANT':'label:important !is:chats',
+	'DRAFTS':'label:drafts !is:chats',
+	'SENT':'label:sent !is:chats'
 }
 
 
 
 var FROM_HEADER_REGEX = new RegExp(/"?(.*?)"?\s?<(.*)>/);
-
+moveEmailTo = function(threadid, labelid, labelname ){
+	console.log("moveEmailTo");
+	app.movetofolder = labelname;
+	console.log(labelid);
+	gmail.threads.modify({userId:'me',id:threadid,addLabelIds:[labelid], removeLabelIds:["INBOX"]}).then(function(resp){
+		console.log(resp);	
+		document.querySelector('#labels_list').close();
+		app.main_page = 0;
+		document.querySelector('#emailMoved').show();
+		app.threads.splice(app.selectedThreadId, 1);
+		checkAlldone();
+	});
+}
+app.showLabels = function(e){
+	// document.querySelector('#labels_list').open();
+	e.target.dropdown = document.querySelector('#labels_list');
+	e.target.dropdown.relatedTarget = e.target;
+	e.target.dropdown.open();
+}
 toggleDrawer = function(){
 	drawer = document.querySelector('#drawerPanel');
 	drawer.togglePanel();
+}
+
+trashEmail = function(id){
+	console.log("trashEmail");
+	console.log(id);
+	gmail.threads.trash({userId:'me', id:id}).then(function(resp){
+		console.log("email trashed");
+		console.log(resp);
+		// lastTrashedThread = $.extend({}, app.threads[app.selectedThreadId]);
+		lastTrashedThread = app.threads[app.selectedThreadId];
+		lastTrashedThreadId = id;
+		app.threads.splice(app.selectedThreadId, 1);
+		document.querySelector('#emailTrashed').show();
+		app.main_page = 0;
+		checkAlldone();
+	});
+}
+untrashEmail = function(){
+	console.log("untrashEmail");
+	gmail.threads.untrash({userId:'me', id:lastTrashedThreadId}).then(function(resp){
+		console.log("email trashed");
+		console.log(resp);
+
+		app.threads.splice(app.selectedThreadId,0,lastTrashedThread)
+		lastTrashedThreadId = null;
+		lastTrashedThread = null;
+		checkAlldone();
+	});
 }
 
 //performance could be improved
@@ -83,6 +164,15 @@ function processMessage(resp) {
 
   return messages;
 }
+
+checkAlldone = function(){
+	if (typeof(app.threads) == "undefined" || app.threads.length == 0){
+		app.alldone = true;	
+	}
+	else{
+		app.alldone = false;
+	}
+}
 var emailsToLoad = 0;
 var nextPageToken = ""
 loadThreads = function(threads){
@@ -90,13 +180,20 @@ loadThreads = function(threads){
 	if (emailsToLoad == 0){
 		app.threads = app.threads.concat(threads);
 		app.loading = false;
+		console.log(threads);
 	}	
 }
 app.fetchMail = function(q, opt_callback) {
+			app.alldone = false;
 	console.log("fetchMail");	
-  	var gmail = gapi.client.gmail.users;
 	 // Fetch only the emails in the user's inbox.
 	gmail.threads.list({userId: 'me', q: q, 'maxResults':10, pageToken:nextPageToken}).then(function(resp) {
+		console.log(resp);
+		if (!resp.result.threads){
+			app.loading = false;
+			app.alldone = true;
+			return;
+		}
 	nextPageToken = resp.result.nextPageToken;
     var threads = resp.result.threads;
     var batch = gapi.client.newBatch();
@@ -146,13 +243,27 @@ app.refreshInbox = function(e) {
 refreshInboxWithLabel = function(label){
 	console.log("refreshInboxWithLabel");
 	app.heading = label;
-	app.list_q = labels_search[label];
+	if (label == "NOW"){
+		console.log("Now");
+		app.list_q = nowSearchTerm();
+		console.log(app.list_q);
+	}
+	else{
+		app.list_q = labels_search[label];
+	}
+
 	app.refreshInbox();
 }
 app.loadMoreEmails = function(e){
 	console.log("loadMoreEmails");
-  	var q = app.list_q;
-  	app.fetchMail(q);
+	console.log(nextPageToken);
+	if (typeof(nextPageToken) === 'undefined' || nextPageToken == ""){
+		console.log("No more");
+	}
+	else{
+	  	var q = app.list_q;
+	  	app.fetchMail(q);
+	}
 }
 
 goback = function(backto){
@@ -189,6 +300,7 @@ base64decode = function(data, callback){
 viewEmail = function(index){
 	app.main_page = 1;
 	app.selectedThread = app.threads[index];
+	app.selectedThreadId = index;
 
 	app.selectedemail = index;
 	console.log("viewEmail : ");
@@ -197,7 +309,6 @@ viewEmail = function(index){
 	// console.log(app.threads[index]);
 	var thread = app.threads[index];
 	var lastest_id = thread.messages[0].id;
-  	var gmail = gapi.client.gmail.users;
 	 // Fetch only the emails in the user's inbox.
 
 	gmail.messages.get({userId: 'me', id:lastest_id, format:'full'}).then(function(resp) {
@@ -214,6 +325,7 @@ viewEmail = function(index){
 	   		if (payload.body.size != 0){
 		    	body_str = Base64.decode(payload.body.data);
 		    	body_holder = document.getElementById('body_holder');
+		    	body_str.replace(/<a href="/g, '<a target="_blank" href="');
 				body_holder.innerHTML = body_str;
 		    }
 		    else{
@@ -225,6 +337,7 @@ viewEmail = function(index){
 			    	body_str = ""
 		    		body_str = Base64.decode(payload.parts[1].body.data)
 		    		// body_str = atob(payload.parts[1].body.data)
+			    	body_str = body_str.replace(/<a href="/g, '<a target="_blank" href="');
 		    		app.email_body = body_str;
 		    		body_holder = document.getElementById('body_holder');
 					body_holder.innerHTML = body_str;
@@ -253,7 +366,15 @@ app.onSigninSuccess = function(e, detail, sender) {
 	this.gapi = e.detail.gapi;
 	gapi.client.load('gmail', 'v1').then(function() {
 		console.log("Loaded gmail")
-		var gmail = gapi.client.gmail.users;
+		gmail = gapi.client.gmail.users;
+		gmail.labels.list({userId:'me'}).then(function(resp){
+			console.log("list labels");
+			console.log(resp);
+
+			app.labels = resp.result.labels.sort(labelCompare);
+		});
+
+
 		app.refreshInbox();
 		// gmail.labels.list({userId: 'me'}).then(function(resp) {
 		//   // Don't include system labels.

@@ -20,7 +20,11 @@
 	margin-bottom:10px;
 	/*width:100px;*/
 }
-
+paper-toast{
+  /*bottom: 0;*/
+  /*left: 0;*/
+  /*width: 100%;*/
+}
 core-drawer-panel:not[narrow] drawer{
 }
 .letter {
@@ -46,7 +50,7 @@ core-toolbar{
 }
 
 [main] core-toolbar{
-	background-color: #e5e5e5;
+	background-color: #ffffff;
 	font-family: sans-serif;
 }
 .thread-name{

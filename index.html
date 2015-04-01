@@ -63,7 +63,8 @@
 
                         <core-header-panel drawer id="menu">
                             <core-menu class="menu">
-                                <paper-item onclick="refreshInboxWithLabel('INBOX')"><core-icon class="blue" icon="mail"></core-icon> Inbox </paper-item>
+                                <paper-item onclick="refreshInboxWithLabel('NOW')"><core-icon icon="today"></core-icon> Today </paper-item>
+                                <paper-item onclick="refreshInboxWithLabel('INBOX')"><core-icon icon="mail"></core-icon> Inbox </paper-item>
                                 <div class="separator"></div>
                                 <paper-item onclick="refreshInboxWithLabel('STARRED')"><core-icon icon="star"></core-icon> Starred</paper-item>
                                 <paper-item onclick="refreshInboxWithLabel('IMPORTANT')"><core-icon icon="turned-in"></core-icon> Important</paper-item>
@@ -74,6 +75,13 @@
                         <core-header-panel main horizontal center-justified layout flex layout vertical>
                           <core-animated-pages   selected="{{main_page}}" transitions="hero-transition"  flex>
                             <section flex style="width:95%;margin-left:auto;margin-right:auto;margin-top:20px;" >
+                                <template if="{{alldone}}">
+                                <div layout vertical style="width:300px;margin-left:auto;margin-right:auto;">
+                                  <img width="80" style="margin-left:auto;margin-right:auto;" src="images/noemails.png">
+                                  </img>
+                                  <span center> Hooray ! You have done all your emails.</span>
+                                </div>
+                                </template>
                                 <template if="{{loading}}">
                                   <div style="width:50px;margin-left:auto;margin-right:auto;">
                                   <paper-spinner active></paper-spinner>
@@ -126,11 +134,22 @@
                                       </core-icon>
                                       <core-icon icon="report">
                                       </core-icon>
-                                      <core-icon icon="delete">
-                                      </core-icon>
-                                      <core-icon icon="folder">
-                                      </core-icon>
-                                      <core-icon icon="loyalty">
+                                      <paper-icon-button onclick="trashEmail('{{selectedThread.id}}')" icon="delete">
+                                      </paper-icon-button>
+                                      <paper-icon-button on-tap="{{showLabels}}" tabindex="0" icon="folder">
+                                      </paper-icon-button>
+                                      <paper-dropdown autoFocus="{{true}}" id="labels_list" halign="right" class="dropdown">
+                                        <core-menu class="menu" id="label_menu" style="max-height:500px;">
+                                          <template repeat="{{label in labels}}">
+                                            <template if="{{label.type == 'user'}}">
+                                            <paper-item onclick="moveEmailTo('{{selectedThread.id}}','{{label.id}}','{{label.name}}')">
+                                                {{label.name}} 
+                                            </paper-item>
+                                            </template>
+                                          </template>
+                                        </core-menu>
+                                      </paper-dropdown>
+                                    <core-icon icon="loyalty">
                                       </core-icon>
                                   </core-toolbar>
                                   <div hero-id="{{selectedThread.id}}-subject" class="email-header" layout horizontal>
@@ -163,6 +182,8 @@
             </core-pages>
       </more-route-selector>
 
+    <paper-toast id="emailTrashed" text="Moved to Trashed" ><div onclick="untrashEmail()" style="color:#eeff41;"> Undo </div></paper-toast>
+    <paper-toast id="emailMoved" text="Moved to {{movetofolder}}" ></paper-toast>
 
         
     </template>
