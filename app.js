@@ -39,6 +39,11 @@ app.selectedThread = null;
 app.selectedThreadId = null;
 app.lastTrashedThread = null;
 app.lastTrashedThreadId = null;
+app.lastArchivedThread = null;
+app.lastArchivedThreadId = null;
+app.lastMovedThread = null;
+app.lastMovedThreadId = null;
+app.lastMovedThreadFolder = null;
 app.movetofolder = null;
 // app.list_q = "category:primary || label:important";
 app.list_q = nowSearchTerm();
@@ -61,6 +66,26 @@ var labels_search = {
 
 
 var FROM_HEADER_REGEX = new RegExp(/"?(.*?)"?\s?<(.*)>/);
+archiveEmail = function(threadid){
+	gmail.threads.modify({userId:'me',id:threadid, removeLabelIds:["INBOX"]}).then(function(resp){
+		console.log(resp);	
+		app.main_page = 0;
+		app.lastArchivedThread = app.threads[app.selectedThreadId];
+		app.lastArchivedThreadId = threadid;
+		document.querySelector('#emailArchived').show();
+		app.threads.splice(app.selectedThreadId, 1);
+		checkAlldone();
+	});
+}
+unarchiveEmail = function(){
+	console.log("unarchiveEmail");
+	gmail.threads.modify({userId:'me',id:app.lastArchivedThreadId, addLabelIds:["INBOX"]}).then(function(resp){
+		console.log(resp);	
+		app.main_page = 0;
+		app.threads.splice(app.selectedThreadId, 0, app.lastArchivedThread);
+		checkAlldone();
+	});
+}
 moveEmailTo = function(threadid, labelid, labelname ){
 	console.log("moveEmailTo");
 	app.movetofolder = labelname;
@@ -74,6 +99,17 @@ moveEmailTo = function(threadid, labelid, labelname ){
 		checkAlldone();
 	});
 }
+// unmoveEmailTo = function(){
+// 	app.movetofolder = labelname;
+// 	gmail.threads.modify({userId:'me',id:lastMovedThreadId,addLabelIds:[], removeLabelIds:[lastMovedThreadFolder]}).then(function(resp){
+// 		console.log(resp);	
+// 		document.querySelector('#labels_list').close();
+// 		app.main_page = 0;
+// 		document.querySelector('#emailMoved').show();
+// 		app.threads.splice(app.selectedThreadId, 1);
+// 		checkAlldone();
+// 	});
+// }
 app.showLabels = function(e){
 	// document.querySelector('#labels_list').open();
 	e.target.dropdown = document.querySelector('#labels_list');
@@ -167,7 +203,13 @@ function processMessage(resp) {
 
 checkAlldone = function(){
 	if (typeof(app.threads) == "undefined" || app.threads.length == 0){
-		app.alldone = true;	
+		if (typeof(nextPageToken) == "undefined" || nextPageToken == ""){
+			app.alldone = true;	
+		}
+		else{
+			loadMoreEmails();
+			app.alldone = false;
+		}
 	}
 	else{
 		app.alldone = false;
@@ -254,7 +296,7 @@ refreshInboxWithLabel = function(label){
 
 	app.refreshInbox();
 }
-app.loadMoreEmails = function(e){
+loadMoreEmails = function(){
 	console.log("loadMoreEmails");
 	console.log(nextPageToken);
 	if (typeof(nextPageToken) === 'undefined' || nextPageToken == ""){

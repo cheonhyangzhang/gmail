@@ -112,7 +112,7 @@
                                 </template>
                               <template if="{{threads.length != 0}}">
                               <div style="width:100px;margin-left:auto;margin-right:auto;">
-                              <paper-button class="more-button" horizontal center-justified layout raised on-tap="{{loadMoreEmails}}"> More ...</paper-button>
+                              <paper-button class="more-button" horizontal center-justified layout raised onclick="loadMoreEmails()"> More ...</paper-button>
                               </div>
                            
                               </template>
@@ -130,10 +130,8 @@
                                       </paper-button>
                                       <div flex>
                                       </div>
-                                      <core-icon icon="archive">
-                                      </core-icon>
-                                      <core-icon icon="report">
-                                      </core-icon>
+                                      <paper-icon-button onclick="archiveEmail('{{selectedThread.id}}')" icon="archive">
+                                      </paper-icon-button>
                                       <paper-icon-button onclick="trashEmail('{{selectedThread.id}}')" icon="delete">
                                       </paper-icon-button>
                                       <paper-icon-button on-tap="{{showLabels}}" tabindex="0" icon="folder">
@@ -149,8 +147,8 @@
                                           </template>
                                         </core-menu>
                                       </paper-dropdown>
-                                    <core-icon icon="loyalty">
-                                      </core-icon>
+                                    <!-- <core-icon icon="loyalty"> -->
+                                      <!-- </core-icon> -->
                                   </core-toolbar>
                                   <div hero-id="{{selectedThread.id}}-subject" class="email-header" layout horizontal>
                                     <span flex>
@@ -184,6 +182,7 @@
 
     <paper-toast id="emailTrashed" text="Moved to Trashed" ><div onclick="untrashEmail()" style="color:#eeff41;"> Undo </div></paper-toast>
     <paper-toast id="emailMoved" text="Moved to {{movetofolder}}" ></paper-toast>
+    <paper-toast id="emailArchived" text="Archived" ><div onclick="unarchiveEmail()" style="color:#eeff41;"> Undo </div></paper-toast>
 
         
     </template>
