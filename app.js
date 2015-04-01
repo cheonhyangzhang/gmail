@@ -2,13 +2,14 @@ DEBUG = false;
 
 
 var app = document.querySelector('#app');
-app.heading = 'Gmail Inbox';
+app.heading = 'Inbox';
+app.loading = false;
 app.page = 'login';
 app.main_page = 0;
 app.threads = [];
 app.selectedemail = 0;
 app.selectedThread = null;
-
+app.list_q = "category:primary || label:important";
 var Labels = {
   UNREAD: 'UNREAD',
   STARRED: 'STARRED'
@@ -44,21 +45,18 @@ function getValueForHeaderField(headers, field) {
 SUBJECT_MAX_LENGTH = 60;
 
 function processMessage(resp) {
-	// console.log("Process Message");
   var messages = resp.result.messages;
-
   for (var j = 0, m; m = messages[j]; ++j) {
     var headers = m.payload.headers;
-
-    // Example: Thu Sep 25 2014 14:43:18 GMT-0700 (PDT) -> Sept 25.
+    //Example: Thu Sep 25 2014 14:43:18 GMT-0700 (PDT) -> Sept 25.
     var date = new Date(getValueForHeaderField(headers, 'Date'));
     m.date = date.toDateString().split(' ').slice(1, 3).join(' ');
     m.to = getValueForHeaderField(headers, 'To');
     m.subject = getValueForHeaderField(headers, 'Subject');
-    if (typeof(m.subject) != 'undefined' && m.subject.length > SUBJECT_MAX_LENGTH){
-    	// console.log(m.substring(0, SUBJECT_MAX_LENGTH));
-    	m.subject = m.subject.substring(0, SUBJECT_MAX_LENGTH) + "..."
-    }
+    // if (typeof(m.subject) != 'undefined' && m.subject.length > SUBJECT_MAX_LENGTH){
+    	// console.log("Defined");
+    // 	m.subject = m.subject.substring(0, SUBJECT_MAX_LENGTH) + "..."
+    // }
     var fromHeaders = getValueForHeaderField(headers, 'From');
     var fromHeaderMatches = fromHeaders.match(FROM_HEADER_REGEX);
 
@@ -77,13 +75,12 @@ function processMessage(resp) {
     m.from.name = m.from.name.split('@')[0]; // Ensure email is split.
 
     m.from.initial = m.from.name[0]
-    // m.initial = m.from.name[0]
+    m.initial = m.from.name[0]
 
-    m.unread = m.labelIds.indexOf(Labels.UNREAD) != -1;
-    m.starred = m.labelIds.indexOf(Labels.STARRED) != -1;
+    // m.unread = m.labelIds.indexOf(Labels.UNREAD) != -1;
+    // m.starred = m.labelIds.indexOf(Labels.STARRED) != -1;
   }
 
-  // console.log(messages);
   return messages;
 }
 var emailsToLoad = 0;
@@ -91,55 +88,29 @@ var nextPageToken = ""
 loadThreads = function(threads){
 	emailsToLoad --;
 	if (emailsToLoad == 0){
-		app.threads = threads;
-		console.log("load finished");
+		app.threads = app.threads.concat(threads);
+		app.loading = false;
 	}	
-	else{
-		console.log("Not finished loading");
-	}
 }
 app.fetchMail = function(q, opt_callback) {
 	console.log("fetchMail");	
   	var gmail = gapi.client.gmail.users;
 	 // Fetch only the emails in the user's inbox.
-	gmail.threads.list({userId: 'me', q: q, 'maxResults':15, 'nextPageToken':nextPageToken}).then(function(resp) {
-	// gmail.threads.list({userId: 'me', q: q}).then(function(resp) {
-	console.log(resp);
+	gmail.threads.list({userId: 'me', q: q, 'maxResults':10, pageToken:nextPageToken}).then(function(resp) {
 	nextPageToken = resp.result.nextPageToken;
-	console.log('nextPageToken');
-	console.log(nextPageToken);
     var threads = resp.result.threads;
-	console.log(threads);
-    // console.log("threads");
-    // console.log(threads);
-    console.log("before batch");
     var batch = gapi.client.newBatch();
-    console.log("before foreach");
     emailsToLoad = threads.length;
     threads.forEach(function(thread, i) {
 		var req = gmail.threads.get({userId: 'me', 'id': thread.id});
 		batch.add(req);
 		req.then(function(resp) {
-			console.log("get messages");
-			console.log(resp);
 			thread.messages = processMessage(resp).reverse();
-			console.log("process messages done");
 			loadThreads(threads);
-			//thread.archived = false;
-			// Set entire thread data at once, when it's all been processed.
-
-			// app.job('addthreads', function() {
-			// 	console.log("job addthreads");
-			// 	this.threads = threads;
-			// 	console.log(app.threads);
-			// 	opt_callback && opt_callback(threads);
-			// }, 100);
 		});
     });
 
-    console.log("Before batch.then");
 	batch.then();
-    console.log("After batch.then");
 	});
 };
 function getAllUserProfileImages(users, nextPageToken, callback) {
@@ -162,22 +133,28 @@ function getAllUserProfileImages(users, nextPageToken, callback) {
 }
 
 //refreshInbox fields
-app.refreshInbox = function(opt_callback) {
+app.refreshInbox = function(e) {
+	app.main_page = 0;
 	console.log("refreshInbox");
-  // var q = 'in:inbox';
-  var q = 'category:primary || label:important';
-
-  if (opt_callback) {
-    app.fetchMail(q, opt_callback.bind(this));
-  } else {
-    app.fetchMail(q);
-  }
+	app.loading = true;
+  	// var q = 'in:inbox';
+  	app.threads = [];
+  	nextPageToken = "";
+  	var q = app.list_q;
+  	app.fetchMail(q);
 };
-
-refreshEmails = function(label){
-	var q = labels_search[label];
-	app.fetchMail(q);
+refreshInboxWithLabel = function(label){
+	console.log("refreshInboxWithLabel");
+	app.heading = label;
+	app.list_q = labels_search[label];
+	app.refreshInbox();
 }
+app.loadMoreEmails = function(e){
+	console.log("loadMoreEmails");
+  	var q = app.list_q;
+  	app.fetchMail(q);
+}
+
 goback = function(backto){
 	console.log("goback");
 	app.email_subject = "asdfdsasdflasdjflkadsjf";

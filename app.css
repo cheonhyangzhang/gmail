@@ -11,6 +11,11 @@ box-shadow: 0.5px 0px 1px 0.5px rgba(0,0,0,0.75);
 .app-header{
 	height:40px;
 }
+.more-button{
+	margin-top:10px;
+	margin-bottom:10px;
+	/*width:100px;*/
+}
 
 core-drawer-panel:not[narrow] drawer{
 }

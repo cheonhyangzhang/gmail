@@ -41,8 +41,9 @@
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
                         <div flex> {{heading}}</div>
-                         <paper-icon-button icon="apps"  >
-                        </paper-dropdown-menu>
+                         <paper-icon-button on-tap="{{refreshInbox}}" icon="refresh">
+                        </paper-icon-button> 
+                         <paper-icon-button icon="apps">
                         </paper-icon-button> 
                         <core-image class="avatar" src="{{user.profile_image}}"></core-image>
 <!--                         <google-signin width="wide" height="tall"
@@ -59,17 +60,22 @@
 
                         <core-header-panel drawer id="menu">
                             <core-menu class="menu">
-                                <paper-item onclick="refreshEmails('INBOX')"><core-icon class="blue" icon="mail"></core-icon> Inbox </paper-item>
+                                <paper-item onclick="refreshInboxWithLabel('INBOX')"><core-icon class="blue" icon="mail"></core-icon> Inbox </paper-item>
                                 <div class="separator"></div>
-                                <paper-item onclick="refreshEmails('STARRED')"><core-icon icon="star"></core-icon> Starred</paper-item>
-                                <paper-item onclick="refreshEmails('IMPORTANT')"><core-icon icon="turned-in"></core-icon> Important</paper-item>
-                                <paper-item onclick="refreshEmails('DRAFTS')"><core-icon icon="drafts"></core-icon> Drafts</paper-item>
-                                <paper-item onclick="refreshEmails('SENT')"><core-icon icon="send"></core-icon> Sent</paper-item>
+                                <paper-item onclick="refreshInboxWithLabel('STARRED')"><core-icon icon="star"></core-icon> Starred</paper-item>
+                                <paper-item onclick="refreshInboxWithLabel('IMPORTANT')"><core-icon icon="turned-in"></core-icon> Important</paper-item>
+                                <paper-item onclick="refreshInboxWithLabel('DRAFTS')"><core-icon icon="drafts"></core-icon> Drafts</paper-item>
+                                <paper-item onclick="refreshInboxWithLabel('SENT')"><core-icon icon="send"></core-icon> Sent</paper-item>
                             </core-menu>
                         </core-header-panel> 
                         <core-header-panel main horizontal center-justified layout flex layout vertical>
                           <core-animated-pages   selected="{{main_page}}" transitions="hero-transition"  flex>
                             <section flex style="width:95%;margin-left:auto;margin-right:auto;margin-top:20px;" >
+                                <template if="{{loading}}">
+                                  <div style="width:50px;margin-left:auto;margin-right:auto;">
+                                  <paper-spinner active></paper-spinner>
+                                  </div>
+                                </template>
                                 <template repeat="{{model, index in threads}}">
                                     <div class="thread-card"  layout horizontal hero-id="hero{{index}}" >
                                       <div layout vertical>
@@ -93,10 +99,12 @@
                                       </div>
                                   </div>
                                 </template>
-                              <div >
-                              <paper-button style="" horizontal center-justified layout raised onclick="refreshEmails()"> More ...</paper-button>
+                              <template if="{{threads.length != 0}}">
+                              <div style="width:100px;margin-left:auto;margin-right:auto;">
+                              <paper-button class="more-button" horizontal center-justified layout raised on-tap="{{loadMoreEmails}}"> More ...</paper-button>
                               </div>
                            
+                              </template>
 
                             </section>
 
