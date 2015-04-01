@@ -1,4 +1,5 @@
 DEBUG = false;
+
 function nowSearchTerm(){
 	var today_time = new Date();
 	var tomorrow_time = new Date();
@@ -29,7 +30,7 @@ function labelCompare(a,b) {
 var app = document.querySelector('#app');
 app.labels_opened = true;
 app.alldone = false;
-app.heading = 'Today';
+app.heading = 'TODAY';
 app.loading = false;
 app.page = 'login';
 app.main_page = 0;
@@ -49,10 +50,6 @@ app.movetofolder = null;
 app.list_q = nowSearchTerm();
 app.labels = [];
 var gmail = null;
-var Labels = {
-  UNREAD: 'UNREAD',
-  STARRED: 'STARRED'
-};
 var PROFILE_IMAGE_SIZE = 30;
 var labels_search = {
 	// 'INBOX':'category:primary || label:important !is:chats',
@@ -66,140 +63,22 @@ var labels_search = {
 
 
 var FROM_HEADER_REGEX = new RegExp(/"?(.*?)"?\s?<(.*)>/);
-archiveEmail = function(threadid){
-	gmail.threads.modify({userId:'me',id:threadid, removeLabelIds:["INBOX"]}).then(function(resp){
-		console.log(resp);	
-		app.main_page = 0;
-		app.lastArchivedThread = app.threads[app.selectedThreadId];
-		app.lastArchivedThreadId = threadid;
-		document.querySelector('#emailArchived').show();
-		app.threads.splice(app.selectedThreadId, 1);
-		checkAlldone();
-	});
-}
-unarchiveEmail = function(){
-	console.log("unarchiveEmail");
-	gmail.threads.modify({userId:'me',id:app.lastArchivedThreadId, addLabelIds:["INBOX"]}).then(function(resp){
-		console.log(resp);	
-		app.main_page = 0;
-		app.threads.splice(app.selectedThreadId, 0, app.lastArchivedThread);
-		checkAlldone();
-	});
-}
-moveEmailTo = function(threadid, labelid, labelname ){
-	console.log("moveEmailTo");
-	app.movetofolder = labelname;
-	console.log(labelid);
-	gmail.threads.modify({userId:'me',id:threadid,addLabelIds:[labelid], removeLabelIds:["INBOX"]}).then(function(resp){
-		console.log(resp);	
-		document.querySelector('#labels_list').close();
-		app.main_page = 0;
-		document.querySelector('#emailMoved').show();
-		app.threads.splice(app.selectedThreadId, 1);
-		checkAlldone();
-	});
-}
-// unmoveEmailTo = function(){
-// 	app.movetofolder = labelname;
-// 	gmail.threads.modify({userId:'me',id:lastMovedThreadId,addLabelIds:[], removeLabelIds:[lastMovedThreadFolder]}).then(function(resp){
-// 		console.log(resp);	
-// 		document.querySelector('#labels_list').close();
-// 		app.main_page = 0;
-// 		document.querySelector('#emailMoved').show();
-// 		app.threads.splice(app.selectedThreadId, 1);
-// 		checkAlldone();
-// 	});
-// }
+
 app.showLabels = function(e){
 	// document.querySelector('#labels_list').open();
 	e.target.dropdown = document.querySelector('#labels_list');
 	e.target.dropdown.relatedTarget = e.target;
 	e.target.dropdown.open();
 }
-toggleDrawer = function(){
-	drawer = document.querySelector('#drawerPanel');
-	drawer.togglePanel();
-}
 
-trashEmail = function(id){
-	console.log("trashEmail");
-	console.log(id);
-	gmail.threads.trash({userId:'me', id:id}).then(function(resp){
-		console.log("email trashed");
-		console.log(resp);
-		// lastTrashedThread = $.extend({}, app.threads[app.selectedThreadId]);
-		lastTrashedThread = app.threads[app.selectedThreadId];
-		lastTrashedThreadId = id;
-		app.threads.splice(app.selectedThreadId, 1);
-		document.querySelector('#emailTrashed').show();
-		app.main_page = 0;
-		checkAlldone();
-	});
-}
-untrashEmail = function(){
-	console.log("untrashEmail");
-	gmail.threads.untrash({userId:'me', id:lastTrashedThreadId}).then(function(resp){
-		console.log("email trashed");
-		console.log(resp);
 
-		app.threads.splice(app.selectedThreadId,0,lastTrashedThread)
-		lastTrashedThreadId = null;
-		lastTrashedThread = null;
-		checkAlldone();
-	});
-}
 
-//performance could be improved
-function getValueForHeaderField(headers, field) {
-  for (var i = 0, header; header = headers[i]; ++i) {
-    if (header.name == field || header.name == field.toLowerCase()) {
-      return header.value;
-    }
-  }
-  return null;
-}
+
+
 
 SUBJECT_MAX_LENGTH = 60;
 
-function processMessage(resp) {
-  var messages = resp.result.messages;
-  for (var j = 0, m; m = messages[j]; ++j) {
-    var headers = m.payload.headers;
-    //Example: Thu Sep 25 2014 14:43:18 GMT-0700 (PDT) -> Sept 25.
-    var date = new Date(getValueForHeaderField(headers, 'Date'));
-    m.date = date.toDateString().split(' ').slice(1, 3).join(' ');
-    m.to = getValueForHeaderField(headers, 'To');
-    m.subject = getValueForHeaderField(headers, 'Subject');
-    // if (typeof(m.subject) != 'undefined' && m.subject.length > SUBJECT_MAX_LENGTH){
-    	// console.log("Defined");
-    // 	m.subject = m.subject.substring(0, SUBJECT_MAX_LENGTH) + "..."
-    // }
-    var fromHeaders = getValueForHeaderField(headers, 'From');
-    var fromHeaderMatches = fromHeaders.match(FROM_HEADER_REGEX);
 
-    m.from = {};
-
-    // Use name if one was found. Otherwise, use email address.
-    if (fromHeaderMatches) {
-      // If no a name, use email address for displayName.
-      m.from.name = fromHeaderMatches[1].length ? fromHeaderMatches[1] :
-                                                  fromHeaderMatches[2];
-      m.from.email = fromHeaderMatches[2];
-    } else {
-      m.from.name = fromHeaders.split('@')[0];
-      m.from.email = fromHeaders;
-    }
-    m.from.name = m.from.name.split('@')[0]; // Ensure email is split.
-
-    m.from.initial = m.from.name[0]
-    m.initial = m.from.name[0]
-
-    // m.unread = m.labelIds.indexOf(Labels.UNREAD) != -1;
-    // m.starred = m.labelIds.indexOf(Labels.STARRED) != -1;
-  }
-
-  return messages;
-}
 
 checkAlldone = function(){
 	if (typeof(app.threads) == "undefined" || app.threads.length == 0){
@@ -216,16 +95,68 @@ checkAlldone = function(){
 	}
 }
 var emailsToLoad = 0;
-var nextPageToken = ""
-loadThreads = function(threads){
+var nextPageToken = "";
+
+loadThreads = function(threads, checkNew){
 	emailsToLoad --;
 	if (emailsToLoad == 0){
+		if (checkNew){
+			console.log("checkNew");
+			console.log(app.oldthreads);
+			console.log(threads);
+			if (typeof(app.oldthreads) === "undefined" || app.oldthreads.length == 0){
+				if (threads && threads.length != 0){
+					console.log(threads.length + " new emails coming empty");	
+					if (threads.length == 1){
+						cosnole.log(threads);
+						desktopNotifyNewEmail(threads[0].messages[0].from.name, threads[0].messages[0].snippet);
+					}
+					else{
+						desktopNotifyNewEmails(threads.length);	
+					}
+				}
+				else{
+					console.log("no more emails");
+				}
+			}
+			else{
+				//compareTwo threads
+				var newemails = 0; 
+				var newer = false;
+				console.log("Start forEach");
+				$.each(threads, function(index, thread){
+					console.log(newemails);
+					console.log(thread.id);
+					console.log(app.oldthreads[0]);
+					if(thread.id == app.oldthreads[0].id){
+						console.log("find same id");
+						return false;
+					}
+					else{
+						newemails = newemails + 1;
+					}
+				});
+				if (newemails != 0){
+					if (newemails == 1){
+						console.log(threads[0]);
+						desktopNotifyNewEmail(threads[0].messages[0].from.name, threads[0].messages[0].snippet);
+					}
+					else{
+						desktopNotifyNewEmails(threads.length);
+					}
+					console.log( newemails + " new emails coming original not empty");	
+				}
+				else{
+					console.log("No more new emails");
+				}
+			}
+		}
 		app.threads = app.threads.concat(threads);
 		app.loading = false;
 		console.log(threads);
 	}	
 }
-app.fetchMail = function(q, opt_callback) {
+app.fetchMail = function(q, checkNew) {
 			app.alldone = false;
 	console.log("fetchMail");	
 	 // Fetch only the emails in the user's inbox.
@@ -245,7 +176,7 @@ app.fetchMail = function(q, opt_callback) {
 		batch.add(req);
 		req.then(function(resp) {
 			thread.messages = processMessage(resp).reverse();
-			loadThreads(threads);
+			loadThreads(threads, checkNew);
 		});
     });
 
@@ -271,8 +202,27 @@ function getAllUserProfileImages(users, nextPageToken, callback) {
   });
 }
 
+Notification.requestPermission(function (permission) {
+  if (permission !== 'granted') return;
+});
+
+autoRefresh = function(){
+	console.log("autoRefresh set");
+	setTimeout(function(){
+		console.log("autoRefreshing");
+		var now = new Date();
+		console.log(now);
+		app.oldthreads = app.threads;
+		console.log("old threads");
+		console.log(app.oldthreads);
+		refreshInbox(true);
+		autoRefresh();
+	}, 600000);
+	// }, 10000);
+}
+autoRefresh();
 //refreshInbox fields
-app.refreshInbox = function(e) {
+refreshInbox = function(checkNew) {
 	app.main_page = 0;
 	console.log("refreshInbox");
 	app.loading = true;
@@ -280,13 +230,11 @@ app.refreshInbox = function(e) {
   	app.threads = [];
   	nextPageToken = "";
   	var q = app.list_q;
-  	app.fetchMail(q);
+  	app.fetchMail(q, checkNew);
 };
 refreshInboxWithLabel = function(label){
-	console.log("refreshInboxWithLabel");
 	app.heading = label;
-	if (label == "NOW"){
-		console.log("Now");
+	if (label == "TODAY"){
 		app.list_q = nowSearchTerm();
 		console.log(app.list_q);
 	}
@@ -294,13 +242,12 @@ refreshInboxWithLabel = function(label){
 		app.list_q = labels_search[label];
 	}
 
-	app.refreshInbox();
+	refreshInbox();
 }
 loadMoreEmails = function(){
-	console.log("loadMoreEmails");
-	console.log(nextPageToken);
 	if (typeof(nextPageToken) === 'undefined' || nextPageToken == ""){
 		console.log("No more");
+		document.querySelector('#nomoreemails').show();
 	}
 	else{
 	  	var q = app.list_q;
@@ -308,37 +255,9 @@ loadMoreEmails = function(){
 	}
 }
 
-goback = function(backto){
-	console.log("goback");
-	app.email_subject = "asdfdsasdflasdjflkadsjf";
-	app.email_body = "asdfasdfsadflksdjflkasjdflkasdjflkj";
-	console.log(app.email_subject)
-	console.log(app.email_body)
-	app.main_page = 0;
-}
-base64decode = function(data, callback){
-	console.log("base64decode");
-	var urlto = "http://frank-util.appspot.com/basecode64/decode";
-	console.log(urlto);
-	console.log(data);
-	$.ajax({
-		type : "POST",
-		data:{encoded:data, callback:"JSON_CALLBACK"},
-		url:urlto,
-		// jsonpCallback: "JSON_CALLBACK",
-		dataType: "jsonp",
-		success:function(result){
-			console.log("result");	
-			console.log(result);
-			callback(result);
-		},
-		error: function(e){
-			console.log("error");
-			console.log(e);
-		}
 
-	});
-}
+
+
 viewEmail = function(index){
 	app.main_page = 1;
 	app.selectedThread = app.threads[index];
@@ -390,8 +309,13 @@ viewEmail = function(index){
 			    	if (payload.mimeType == "multipart/mixed"){
 			    		payloads = payloads.concat(payload.parts);
 			    	}
+			    	else if (payload.mimeType == "multipart/related"){
+			    		payloads = payloads.concat(payload.parts);
+			    	}
+			    	else if (payload.mimeType == "image/png"){
+			    	}
 			    	else{
-			    		alert("has not supported item");
+			    		alert("has not supported item " + payload.mimeType);
 			    	}
 			    }
 			}
@@ -415,50 +339,19 @@ app.onSigninSuccess = function(e, detail, sender) {
 
 			app.labels = resp.result.labels.sort(labelCompare);
 		});
-
-
-		app.refreshInbox();
-		// gmail.labels.list({userId: 'me'}).then(function(resp) {
-		//   // Don't include system labels.
-		//   // console.log(resp);
-		//   // var labels = resp.result.labels.filter(function(label, i) {
-		//   //   label.color = app.LABEL_COLORS[
-		//   //       Math.round(Math.random() * app.LABEL_COLORS.length)];
-		//   //   return label.type != 'system';
-		//   // });
-
-		//   // app.labels = labels;
-		//   // app.labelMap = labels.reduce(function(o, v, i) {
-		//   //   o[v.id] = v;
-		//   //   return o;
-		//   // }, {});
-
-		// });
+		refreshInbox();
 	});
 
 	gapi.client.load('plus', 'v1').then(function() {
-
-	// 	// Get user's profile pic, cover image, email, and name.
 		gapi.client.plus.people.get({userId: 'me'}).then(function(resp) {
-			// console.log("Get me in plus");
-			// console.log(resp);
-		  
-	// 	  // var COVER_IMAGE_SIZE = 315;
 
 		  var img = resp.result.image && resp.result.image.url.replace(/(.+)\?sz=\d\d/, "$1?sz=" + PROFILE_IMAGE_SIZE);
-	// 	  // var coverImg = resp.result.cover && resp.result.cover.coverPhoto.url.replace(/\/s\d{3}-/, "/s" + COVER_IMAGE_SIZE + "-");
 
 		  app.user = {
 		    name: resp.result.displayName,
 		    email: resp.result.emails[0].value,
 		    profile_image: img
-	// 	  //   cover: coverImg || null
 		  };
-		  // console.log("app.user");
-		  // console.log(app.user);
-
-	// 	  // app.$['navheaderstyle'].coverImg = coverImg;
-	// 	  // app.$.navheader.classList.add('coverimg');
 
 		  var users = {};
 
@@ -473,9 +366,4 @@ app.onSigninSuccess = function(e, detail, sender) {
 
 };//onSuccessLogin
 
-
-app.datalist =[
-	{'name':'Fuck', 'historyId':'2213'},
-	{'name':'up', 'historyId':'34235234'}
-]
 
