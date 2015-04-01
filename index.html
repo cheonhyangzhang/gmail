@@ -70,9 +70,8 @@
                         <core-header-panel main horizontal center-justified layout flex layout vertical>
                           <core-animated-pages   selected="{{main_page}}" transitions="hero-transition"  flex>
                             <section flex style="width:95%;margin-left:auto;margin-right:auto;margin-top:20px;" >
-                              <core-list  style="min-height:400px;" data="{{threads}}" flex>
-                                <template>
-                                    <div class="row"  layout horizontal hero-id="hero{{index}}" >
+                                <template repeat="{{model, index in threads}}">
+                                    <div class="thread-card"  layout horizontal hero-id="hero{{index}}" >
                                       <div layout vertical>
                                         <template if="{{users[model.messages[0].from.name]}}"> 
                                           <core-image class="avatar" src="{{users[model.messages[0].from.name]}}"></core-image>
@@ -94,7 +93,6 @@
                                       </div>
                                   </div>
                                 </template>
-                              </core-list>
                               <div >
                               <paper-button style="" horizontal center-justified layout raised onclick="refreshEmails()"> More ...</paper-button>
                               </div>
@@ -103,8 +101,9 @@
                             </section>
 
                            
-                            <section flex  >
-                                <core-header-panel style="min-height:800px;" hero-id="{{selectedThread.id}}" hero onclick="transition2()">
+                            <section flex>
+                              
+                                <core-header-panel style="min-height:800px;" hero-id="{{selectedThread.id}}" layout vertical hero flex>
                                   <core-toolbar class="toolbar-smaller dark-grey">
                                       <paper-button onclick="goback()">
                                         <core-icon icon="arrow-back" class="icon-with-text"></core-icon>

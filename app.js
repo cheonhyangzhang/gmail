@@ -102,7 +102,7 @@ app.fetchMail = function(q, opt_callback) {
 	console.log("fetchMail");	
   	var gmail = gapi.client.gmail.users;
 	 // Fetch only the emails in the user's inbox.
-	gmail.threads.list({userId: 'me', q: q, 'maxResults':5, 'nextPageToken':nextPageToken}).then(function(resp) {
+	gmail.threads.list({userId: 'me', q: q, 'maxResults':15, 'nextPageToken':nextPageToken}).then(function(resp) {
 	// gmail.threads.list({userId: 'me', q: q}).then(function(resp) {
 	console.log(resp);
 	nextPageToken = resp.result.nextPageToken;
