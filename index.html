@@ -40,7 +40,10 @@
                       <core-toolbar class="toolbar-smaller">
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
-                        <div flex> {{heading}}</div>
+                        <div id="heading" flex> {{heading}}</div>
+                        <!-- <div flex style="background-color:red;padding:10px; height:20px;" layout horizontal> -->
+                          <!-- <paper-input class="search-bar" label="Search" flex></paper-input> -->
+                          <paper-icon-button icon="search" ></paper-icon-button>
                          <paper-icon-button on-tap="{{refreshInbox}}" icon="refresh">
                         </paper-icon-button> 
                          <paper-icon-button icon="apps">
