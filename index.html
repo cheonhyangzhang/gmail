@@ -42,15 +42,6 @@
                         </paper-icon-button> 
                         <div flex> {{heading}}</div>
                          <paper-icon-button icon="apps"  >
-                         <paper-dropdown-menu label="Your favorite pastry">
-                            <paper-dropdown class="dropdown">
-                                <core-menu class="menu">
-                                    <paper-item>Croissant</paper-item>
-                                    <paper-item>Donut</paper-item>
-                                    <paper-item>Financier</paper-item>
-                                    <paper-item>Madeleine</paper-item>
-                                </core-menu>
-                            </paper-dropdown>
                         </paper-dropdown-menu>
                         </paper-icon-button> 
                         <core-image class="avatar" src="{{user.profile_image}}"></core-image>
@@ -68,7 +59,7 @@
 
                         <core-header-panel drawer id="menu">
                             <core-menu class="menu">
-                                <paper-item onclick="refreshEmails('INBOX')"><core-icon class="blue" icon="mail"></core-icon> Inbox</paper-item>
+                                <paper-item onclick="refreshEmails('INBOX')"><core-icon class="blue" icon="mail"></core-icon> Inbox {{selectedemail}}</paper-item>
                                 <div class="separator"></div>
                                 <paper-item onclick="refreshEmails('STARRED')"><core-icon icon="star"></core-icon> Starred</paper-item>
                                 <paper-item onclick="refreshEmails('IMPORTANT')"><core-icon icon="turned-in"></core-icon> Important</paper-item>
@@ -76,12 +67,12 @@
                                 <paper-item onclick="refreshEmails('SENT')"><core-icon icon="send"></core-icon> Sent</paper-item>
                             </core-menu>
                         </core-header-panel> 
-                        <core-header-panel main flex layout vertical>
-                          <core-animated-pages  selected="{{main_page}}" transitions="slide-from-right"  flex>
-                            <section flex>
+                        <core-header-panel main horizontal center-justified layout flex layout vertical>
+                          <core-animated-pages   selected="{{main_page}}" transitions="hero-transition"  flex>
+                            <section flex style="width:95%;margin-left:auto;margin-right:auto;margin-top:20px;" >
                               <core-list  style="min-height:400px;" data="{{threads}}" flex>
                                 <template>
-                                    <div class="row"  layout horizontal >
+                                    <div class="row"  layout horizontal hero-id="hero{{index}}" >
                                       <div layout vertical>
                                         <template if="{{users[model.messages[0].from.name]}}"> 
                                           <core-image class="avatar" src="{{users[model.messages[0].from.name]}}"></core-image>
@@ -94,21 +85,26 @@
                                         </template>
                                        
                                       </div>
-                                      <div layout vertical flex style="cursor:pointer;" onclick="viewEmail({{index}})">
+                                      <div onclick="viewEmail({{index}})" hero-id="{{model.id}}" hero?="{{selectedThread === model }}"  layout vertical flex style="cursor:pointer;" >
+                                        <!-- onclick="viewEmail({{index}})" -->
                                         <div style="display:none;">{{index}}</div>
                                         <div  layout horizontal><span class="thread-name" flex>{{model.messages[0].from.name}}</span><span>{{model.messages[0].date}}</span></div>
-                                        <div class="thread-subject">{{model.messages[0].subject}}</div>
+                                        <div hero-id="{{model.id}}-subject" hero?="{{selectedThread === model }}" class="thread-subject">{{model.messages[0].subject}}</div>
                                         <div style="padding-bottom:5px;font-size:10px;">{{model.messages[0].snippet}}</div>
                                       </div>
                                   </div>
                                 </template>
                               </core-list>
-                                <core-menu class="menu">
-                                  <paper-item horizontal center-justified layout onclick="refreshEmails()"><core-icon icon="cloud-download"></core-icon> More </paper-item>
-                                </core-menu>
+                              <div >
+                              <paper-button style="" horizontal center-justified layout raised onclick="refreshEmails()"> More ...</paper-button>
+                              </div>
+                           
+
                             </section>
+
+                           
                             <section flex  >
-                                <core-header-panel style="min-height:800px;">
+                                <core-header-panel style="min-height:800px;" hero-id="{{selectedThread.id}}" hero onclick="transition2()">
                                   <core-toolbar class="toolbar-smaller dark-grey">
                                       <paper-button onclick="goback()">
                                         <core-icon icon="arrow-back" class="icon-with-text"></core-icon>
@@ -127,7 +123,7 @@
                                       <core-icon icon="loyalty">
                                       </core-icon>
                                   </core-toolbar>
-                                  <div class="email-header" layout horizontal>
+                                  <div hero-id="{{selectedThread.id}}-subject" class="email-header" layout horizontal>
                                     <span flex>
                                     {{email_subject}}
                                     </span>

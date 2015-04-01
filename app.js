@@ -6,12 +6,14 @@ app.heading = 'Gmail Inbox';
 app.page = 'login';
 app.main_page = 0;
 app.threads = [];
+app.selectedemail = 0;
+app.selectedThread = null;
 
 var Labels = {
   UNREAD: 'UNREAD',
   STARRED: 'STARRED'
 };
-var PROFILE_IMAGE_SIZE = 40;
+var PROFILE_IMAGE_SIZE = 30;
 var labels_search = {
 	'INBOX':'category:primary || label:important',
 	'STARRED':'label:starred',
@@ -79,22 +81,30 @@ function processMessage(resp) {
 
     m.unread = m.labelIds.indexOf(Labels.UNREAD) != -1;
     m.starred = m.labelIds.indexOf(Labels.STARRED) != -1;
-    console.log(m.from);
   }
 
   // console.log(messages);
   return messages;
 }
-
+var emailsToLoad = 0;
 var nextPageToken = ""
+loadThreads = function(threads){
+	emailsToLoad --;
+	if (emailsToLoad == 0){
+		app.threads = threads;
+		console.log("load finished");
+	}	
+	else{
+		console.log("Not finished loading");
+	}
+}
 app.fetchMail = function(q, opt_callback) {
 	console.log("fetchMail");	
   	var gmail = gapi.client.gmail.users;
-  	console.log(gmail);
 	 // Fetch only the emails in the user's inbox.
 	gmail.threads.list({userId: 'me', q: q, 'maxResults':5, 'nextPageToken':nextPageToken}).then(function(resp) {
 	// gmail.threads.list({userId: 'me', q: q}).then(function(resp) {
-		console.log(resp);
+	console.log(resp);
 	nextPageToken = resp.result.nextPageToken;
 	console.log('nextPageToken');
 	console.log(nextPageToken);
@@ -102,28 +112,34 @@ app.fetchMail = function(q, opt_callback) {
 	console.log(threads);
     // console.log("threads");
     // console.log(threads);
+    console.log("before batch");
     var batch = gapi.client.newBatch();
+    console.log("before foreach");
+    emailsToLoad = threads.length;
     threads.forEach(function(thread, i) {
 		var req = gmail.threads.get({userId: 'me', 'id': thread.id});
 		batch.add(req);
 		req.then(function(resp) {
+			console.log("get messages");
+			console.log(resp);
 			thread.messages = processMessage(resp).reverse();
+			console.log("process messages done");
+			loadThreads(threads);
 			//thread.archived = false;
 			// Set entire thread data at once, when it's all been processed.
-			app.job('addthreads', function() {
-				this.threads = threads;
-				console.log("job addthreads");
-				// this.threads =[
-				// {'name':'Fucked Up ','historyId':'234'},
-				// {'name':'Scrolled Up','historyId':'23554'},
-				// {'name':'What the hell','historyId':'23554'}
-				// ];
-				opt_callback && opt_callback(threads);
-			}, 100);
+
+			// app.job('addthreads', function() {
+			// 	console.log("job addthreads");
+			// 	this.threads = threads;
+			// 	console.log(app.threads);
+			// 	opt_callback && opt_callback(threads);
+			// }, 100);
 		});
     });
 
+    console.log("Before batch.then");
 	batch.then();
+    console.log("After batch.then");
 	});
 };
 function getAllUserProfileImages(users, nextPageToken, callback) {
@@ -164,6 +180,10 @@ refreshEmails = function(label){
 }
 goback = function(backto){
 	console.log("goback");
+	app.email_subject = "asdfdsasdflasdjflkadsjf";
+	app.email_body = "asdfasdfsadflksdjflkasjdflkasdjflkj";
+	console.log(app.email_subject)
+	console.log(app.email_body)
 	app.main_page = 0;
 }
 base64decode = function(data, callback){
@@ -190,10 +210,11 @@ base64decode = function(data, callback){
 	});
 }
 viewEmail = function(index){
-	app.email_subject = "";
-	app.email_body = "";
-	console.log("viewEmail : ");
 	app.main_page = 1;
+	app.selectedThread = app.threads[index];
+
+	app.selectedemail = index;
+	console.log("viewEmail : ");
 	app.back_content = "Inbox"
 	// console.log(index);
 	// console.log(app.threads[index]);
@@ -201,6 +222,7 @@ viewEmail = function(index){
 	var lastest_id = thread.messages[0].id;
   	var gmail = gapi.client.gmail.users;
 	 // Fetch only the emails in the user's inbox.
+
 	gmail.messages.get({userId: 'me', id:lastest_id, format:'full'}).then(function(resp) {
 		console.log("messages.get");
 		console.log(resp);
@@ -221,7 +243,6 @@ viewEmail = function(index){
 			    if (payload.mimeType == "multipart/alternative"){
 			    	console.log("multipart/alternative");
 			    	// console.log(payload);
-			    	console.log(payload.parts[1].body.data);
 
 			    	// body_str = Base64.decode(payload.parts[1].body.data);
 			    	body_str = ""
@@ -230,7 +251,6 @@ viewEmail = function(index){
 		    		app.email_body = body_str;
 		    		body_holder = document.getElementById('body_holder');
 					body_holder.innerHTML = body_str;
-			    	console.log(body_str);
 			    	
 			    	// body_str = atob(payload.parts[1].body.data);
 			    }
