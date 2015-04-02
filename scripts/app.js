@@ -19,6 +19,8 @@ function nowSearchTerm(){
 }
 
 
+
+
 function labelCompare(a,b) {
   if (a.name < b.name)
      return -1;
