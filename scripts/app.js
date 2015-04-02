@@ -28,10 +28,12 @@ function labelCompare(a,b) {
 }
 
 var app = document.querySelector('#app');
+app.back_content = "TODAY";
 app.labels_opened = true;
 app.alldone = false;
 app.heading = 'TODAY';
 app.loading = false;
+app.bottom_loading = false;
 app.page = 'login';
 app.main_page = 0;
 app.threads = [];
@@ -72,7 +74,13 @@ app.showLabels = function(e){
 }
 
 
-
+app.searchpressed = function(e){
+	if (e.which == 13){
+		if (typeof(app.search) !="undefined" && app.search != ""){
+			searchEmails(app.search);
+		}
+	}
+}
 
 
 
@@ -153,6 +161,7 @@ loadThreads = function(threads, checkNew){
 		}
 		app.threads = app.threads.concat(threads);
 		app.loading = false;
+		app.bottom_loading = false;
 		console.log(threads);
 	}	
 }
@@ -232,6 +241,12 @@ refreshInbox = function(checkNew) {
   	var q = app.list_q;
   	app.fetchMail(q, checkNew);
 };
+searchEmails = function(search){
+	app.heading = "SEARCH";
+	app.list_q = search + " !is:chats";
+	app.back_content = "SEARCH";
+	refreshInbox();
+}
 refreshInboxWithLabel = function(label){
 	app.heading = label;
 	if (label == "TODAY"){
@@ -241,7 +256,7 @@ refreshInboxWithLabel = function(label){
 	else{
 		app.list_q = labels_search[label];
 	}
-
+	app.back_content = label;
 	refreshInbox();
 }
 loadMoreEmails = function(){
@@ -250,6 +265,7 @@ loadMoreEmails = function(){
 		document.querySelector('#nomoreemails').show();
 	}
 	else{
+		app.bottom_loading = true;
 	  	var q = app.list_q;
 	  	app.fetchMail(q);
 	}
@@ -262,10 +278,10 @@ viewEmail = function(index){
 	app.main_page = 1;
 	app.selectedThread = app.threads[index];
 	app.selectedThreadId = index;
+	// app.back_content = label;
 
 	app.selectedemail = index;
 	console.log("viewEmail : ");
-	app.back_content = "Inbox"
 	// console.log(index);
 	// console.log(app.threads[index]);
 	var thread = app.threads[index];

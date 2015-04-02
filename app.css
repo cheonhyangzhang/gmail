@@ -20,6 +20,38 @@
 	margin-bottom:10px;
 	/*width:100px;*/
 }
+paper-input-decorator{
+	font-size:15px;
+}
+paper-input-decorator /deep/ ::-webkit-input-placeholder {
+    /* platform specific rules for placeholder text */
+    color: white;
+    opacity: 0.8;
+    font-size:15px;
+}
+paper-input-decorator /deep/ .focused-underline {
+    /* line color when the input is focused */
+    background-color: #0000ff;
+}
+paper-input-decorator /deep/ .unfocused-underline {
+    /* line color when the input is unfocused */
+    background-color: #0a0aff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 paper-toast{
   /*bottom: 0;*/
   /*left: 0;*/
@@ -48,9 +80,12 @@ core-toolbar{
 	color:white;
 	font-family: sans-serif;
 }
-
+core-header-panel #dropShadow{
+	display:none;
+}
 [main] core-toolbar{
 	background-color: #ffffff;
+	color:#757575;
 	font-family: sans-serif;
 }
 .thread-name{
@@ -65,12 +100,18 @@ core-toolbar{
 	background-color: white;
 	padding:16px;
 	-webkit-box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
--moz-box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
-box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
+	-moz-box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
+	box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
 }
-
+.email-card{
+	width:95%;margin-left:auto;margin-right:auto;margin-top:20px;	
+	margin-bottom:20px;
+	-webkit-box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
+	-moz-box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
+	box-shadow: 0px 2px 2px 2px rgba(0,0,0,0.5);
+}
 .email-header{
-	height:15px;
+	height:20px;
 	background-color: white;
 	padding:16px;
 	-webkit-box-shadow: 0px 0.5px 1px 0.5px rgba(0,0,0,0.75);

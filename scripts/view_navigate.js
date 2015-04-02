@@ -6,7 +6,5 @@ toggleDrawer = function(){
 goback = function(backto){
 	app.email_subject = "";
 	app.email_body = "";
-	console.log(app.email_subject)
-	console.log(app.email_body)
 	app.main_page = 0;
 }

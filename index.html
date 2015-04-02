@@ -19,12 +19,12 @@
     <title>Gmail</title>
   </head>
 
-  <body fullbleed layout vertical fit>
+  <body fullbleed layout vertical >
 
 
     <template is="auto-binding" id="app">
       <more-route-selector>
-            <core-pages selected="{{route}}" fullbleed fit layout vertical>
+            <core-pages selected="{{route}}" fullbleed fit >
               <section route="login" >
                   <div id="loginscreen" layout vertical center-center fit
                      class="{{ {show: !isAuthenticated} | tokenList }}">
@@ -35,15 +35,16 @@
                       on-google-signin-failure="{{onSigninFailure}}"></google-signin>
                   </div>
               </section>
-              <section route="inbox" fullbleed fit layout vertical>
-                    <core-header-panel flex>
+              <section route="inbox" layout vertical>
+                    <core-header-panel flex layout vertical mode="seamed">
                       <core-toolbar class="toolbar-smaller">
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
-                        <div id="heading" flex> {{heading}}</div>
-                        <!-- <div flex style="background-color:red;padding:10px; height:20px;" layout horizontal> -->
-                          <!-- <paper-input class="search-bar" label="Search" flex></paper-input> -->
+                        <div id="heading" style="width:185px;">{{heading}}</div>
                           <paper-icon-button icon="search" ></paper-icon-button>
+                        <paper-input-decorator style="color:white;" flex label="Search ">
+                            <input  is="core-input" value="{{search}}" on-keypress="{{searchpressed}}"> 
+                        </paper-input-decorator>
                          <paper-icon-button onclick="refreshInbox()" icon="refresh">
                         </paper-icon-button> 
                          <paper-icon-button icon="apps">
@@ -59,7 +60,7 @@
 
 
 
-                      <core-drawer-panel id="drawerPanel" >
+                      <core-drawer-panel id="drawerPanel" flex>
 
                         <core-header-panel drawer id="menu">
                             <core-menu class="menu">
@@ -72,8 +73,9 @@
                                 <paper-item onclick="refreshInboxWithLabel('SENT')"><core-icon icon="send"></core-icon> Sent</paper-item>
                             </core-menu>
                         </core-header-panel> 
-                        <core-header-panel main horizontal center-justified layout flex layout vertical>
-                          <core-animated-pages   selected="{{main_page}}" transitions="hero-transition"  flex>
+
+                          <core-header-panel  main flex fit layout vertical mode="seamed"> 
+                          <core-animated-pages   selected="{{main_page}}" transitions="slide-from-right"  layout vertical flex fit>
                             <section flex style="width:95%;margin-left:auto;margin-right:auto;margin-top:20px;" >
                                 <template if="{{alldone}}">
                                 <div layout vertical style="width:300px;margin-left:auto;margin-right:auto;">
@@ -82,11 +84,14 @@
                                   <span center> Hooray ! You have done all your emails.</span>
                                 </div>
                                 </template>
+
                                 <template if="{{loading}}">
                                   <div style="width:50px;margin-left:auto;margin-right:auto;">
                                   <paper-spinner active></paper-spinner>
                                   </div>
                                 </template>
+                               
+                                
                                 <template repeat="{{model, index in threads}}">
                                     <div class="thread-card"  layout horizontal hero-id="hero{{index}}" >
                                       <div layout vertical>
@@ -110,68 +115,72 @@
                                       </div>
                                   </div>
                                 </template>
-                              <template if="{{threads.length != 0}}">
+                                
+                              <template if="{{threads.length != 0 && bottom_loading == false}}">
                               <div style="width:100px;margin-left:auto;margin-right:auto;">
                               <paper-button class="more-button" horizontal center-justified layout raised onclick="loadMoreEmails()"> More ...</paper-button>
-                              </div>
-                           
+                              <template if="{{bottom_loading}}">
+                                  <div style="width:50px;margin-left:auto;margin-right:auto;">
+                                  <paper-spinner active></paper-spinner>
+                                  </div>
                               </template>
 
+                              </template>
+                             </div> 
                             </section>
 
                            
-                            <section flex>
-                              
-                                <core-header-panel style="min-height:800px;" hero-id="{{selectedThread.id}}" layout vertical hero flex>
-                                  <core-toolbar class="toolbar-smaller dark-grey">
-                                      <paper-button onclick="goback()">
-                                        <core-icon icon="arrow-back" class="icon-with-text"></core-icon>
-                                        <span >{{back_content}}</span>
-                                      </paper-button>
-                                      <div flex>
+                            <section flex layout vertical >
+                                    <core-header-panel class="email-card" style="" flex layout vertical fit>
+                                       <core-toolbar class="toolbar-smaller">
+                                            <paper-button onclick="goback()">
+                                              <core-icon icon="arrow-back" class="icon-with-text"></core-icon>
+                                              <span >{{back_content}}</span>
+                                            </paper-button>
+                                            <div flex>
+                                            </div>
+                                            <paper-icon-button onclick="archiveEmail('{{selectedThread.id}}')" icon="archive">
+                                            </paper-icon-button>
+                                            <paper-icon-button onclick="trashEmail('{{selectedThread.id}}')" icon="delete">
+                                            </paper-icon-button>
+                                            <paper-icon-button on-tap="{{showLabels}}" tabindex="0" icon="folder">
+                                            </paper-icon-button>
+                                            <paper-dropdown autoFocus="{{true}}" id="labels_list" halign="right" class="dropdown">
+                                              <core-menu class="menu" id="label_menu" style="max-height:500px;">
+                                                <template repeat="{{label in labels}}">
+                                                  <template if="{{label.type == 'user'}}">
+                                                  <paper-item onclick="moveEmailTo('{{selectedThread.id}}','{{label.id}}','{{label.name}}')">
+                                                      {{label.name}} 
+                                                  </paper-item>
+                                                  </template>
+                                                </template>
+                                              </core-menu>
+                                            </paper-dropdown>
+                                        </core-toolbar>
+                                      <div flex fit layout vertical>
+                                          <core-header-panel flex>
+                                         <core-toolbar class="toolbar-smaller">
+                                          <span flex>
+                                          {{email_subject}}
+                                          </span>
+                                          </core-toolbar>
+
+                                          <div flex class="email-body">  
+                                            <div id="body_holder">
+                                              body_holder
+                                            </div>
+                                          </div>
+                                          </core-header-panel>
                                       </div>
-                                      <paper-icon-button onclick="archiveEmail('{{selectedThread.id}}')" icon="archive">
-                                      </paper-icon-button>
-                                      <paper-icon-button onclick="trashEmail('{{selectedThread.id}}')" icon="delete">
-                                      </paper-icon-button>
-                                      <paper-icon-button on-tap="{{showLabels}}" tabindex="0" icon="folder">
-                                      </paper-icon-button>
-                                      <paper-dropdown autoFocus="{{true}}" id="labels_list" halign="right" class="dropdown">
-                                        <core-menu class="menu" id="label_menu" style="max-height:500px;">
-                                          <template repeat="{{label in labels}}">
-                                            <template if="{{label.type == 'user'}}">
-                                            <paper-item onclick="moveEmailTo('{{selectedThread.id}}','{{label.id}}','{{label.name}}')">
-                                                {{label.name}} 
-                                            </paper-item>
-                                            </template>
-                                          </template>
-                                        </core-menu>
-                                      </paper-dropdown>
-                                    <!-- <core-icon icon="loyalty"> -->
-                                      <!-- </core-icon> -->
-                                  </core-toolbar>
-                                  <div hero-id="{{selectedThread.id}}-subject" class="email-header" layout horizontal>
-                                    <span flex>
-                                    {{email_subject}}
-                                    </span>
-                                  </div>
-                                  <div flex id="email-body-id" class="email-body">  
-                                      <div id="body_holder">
-                                        body_holder
-                                      </div>
-                                  </div>
-                                 
-                                  
-
-                                  </core-header-panel>
-                                </core-header-panel>
-                            </section>
-                          </core-animated-pages>
-                          
+                                    </core-header-panel>
+                            </core-header-panel>
+                        </section>
+                      </core-animated-pages>
+                             </core-header-pane>
 
 
 
-                        </core-header-panel>
+
                       </core-drawer-panel>
                      <paper-fab class="down-right-button" icon="add"></paper-fab>
                     </core-header-panel>
@@ -192,9 +201,9 @@
 
     <script src="https://apis.google.com/js/client.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="base64.js"></script>
-    <script src="utils.js"></script>
-    <script src="app.js"></script>
-    <script src="email_modify.js"></script>
-    <script src="view_navigate.js"></script>
+    <script src="scripts/base64.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/email_modify.js"></script>
+    <script src="scripts/view_navigate.js"></script>
 </html>
