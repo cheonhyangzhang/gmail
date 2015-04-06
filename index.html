@@ -95,13 +95,13 @@
                                 <template repeat="{{model, index in threads}}">
                                     <div class="thread-card"  layout horizontal hero-id="hero{{index}}" >
                                       <div layout vertical>
-                                        <template if="{{users[model.messages[0].from.name]}}"> 
-                                          <core-image class="avatar" src="{{users[model.messages[0].from.name]}}"></core-image>
+                                        <template if="{{users[model.from.name]}}"> 
+                                          <core-image class="avatar" src="{{users[model.from.name]}}"></core-image>
                                         </template>
-                                        <template if="{{!users[model.messages[0].from.name]}}">
+                                        <template if="{{!users[model.from.name]}}">
 
                                           <div class="avatar">
-                                            <span style="background-color:{{model.messages[0].from.initial_color}}" class="letter" layout horizontal center-center>{{model.messages[0].from.initial}}</span>
+                                            <span style="background-color:{{model.from.initial_color}}" class="letter" layout horizontal center-center>{{model.from.initial}}</span>
                                           </div>
                                         </template>
                                        
@@ -110,14 +110,14 @@
                                         <!-- onclick="viewEmail({{index}})" -->
                                         <div style="display:none;">{{index}}</div>
                                         <div  layout horizontal>
-                                          <span class="thread-name">{{model.messages[0].from.name}}</span>
+                                          <span class="thread-name">{{model.from.name}}</span>
                                           <template if="{{model.messages.length != 1}}">
                                           <span class="thread-length" > ({{model.messages.length}})</span>
                                           </template>
                                           <span flex></span>
-                                          <span class="thread-time">{{model.messages[0].time}} - </span> <span class="thread-time"> {{model.messages[0].date}}</span></div>
-                                        <div hero-id="{{model.id}}-subject" hero?="{{selectedThread === model }}" class="thread-subject">{{model.messages[0].subject}}</div>
-                                        <div style="padding-bottom:5px;font-size:10px;">{{model.messages[0].snippet}}</div>
+                                          <span class="thread-time">{{model.time}} - </span> <span class="thread-time"> {{model.date}}</span></div>
+                                        <div hero-id="{{model.id}}-subject" hero?="{{selectedThread === model }}" class="thread-subject">{{model.subject}}</div>
+                                        <div style="padding-bottom:5px;font-size:10px;">{{model.snippet}}</div>
                                       </div>
                                   </div>
                                 </template>
@@ -131,12 +131,13 @@
                               <div style="width:100px;margin-left:auto;margin-right:auto;">
                               <paper-button class="more-button" horizontal center-justified layout raised onclick="loadMoreEmails()"> More ...</paper-button>
 
+                               </div> 
                               </template>
-                             </div> 
                             </section>
 
                            
                             <section flex layout vertical >
+
                                     <core-header-panel class="email-card" style="" flex layout vertical fit>
                                        <core-toolbar class="toolbar-smaller">
                                             <paper-button onclick="goback()">
@@ -163,21 +164,26 @@
                                               </core-menu>
                                             </paper-dropdown>
                                         </core-toolbar>
-                                      <div flex fit layout vertical>
-                                          <core-header-panel flex>
-                                         <core-toolbar class="toolbar-smaller">
-                                          <span flex>
-                                          {{email_subject}}
-                                          </span>
-                                          </core-toolbar>
 
-                                          <div flex class="email-body">  
-                                            <div id="body_holder">
-                                              body_holder
-                                            </div>
+                                     
+                                        <div flex fit layout vertical>
+                                            <core-header-panel flex>
+                                             <core-toolbar class="toolbar-smaller">
+                                              <span flex>
+                                              {{email_subject}} {{message.snippet}}
+                                              </span>
+                                              </core-toolbar>
+
+                                              <template repeat ="{{message, index in selectedThread.messages}}">
+                                                <div flex class="email-body">  
+                                                  <div id="body_holder-{{index}}">
+                                                  </div>
+                                                </div>
+                                              </template>
+                                              
+                                              </core-header-panel>
                                           </div>
-                                          </core-header-panel>
-                                      </div>
+                                     
                                     </core-header-panel>
                             </core-header-panel>
                         </section>

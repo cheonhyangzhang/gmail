@@ -186,7 +186,16 @@ app.fetchMail = function(q, checkNew) {
 		var req = gmail.threads.get({userId: 'me', 'id': thread.id});
 		batch.add(req);
 		req.then(function(resp) {
-			thread.messages = processMessage(resp).reverse();
+			thread.messages = processMessage(resp);
+			thread.from = {};
+			thread.from.name = thread.messages[thread.messages.length -1 ].from.name;
+			thread.from.email = thread.messages[thread.messages.length -1 ].from.email;
+			thread.from.initial = thread.messages[thread.messages.length -1 ].from.initial;
+			thread.from.initial_color = thread.messages[thread.messages.length -1 ].from.initial_color;
+			thread.time = thread.messages[thread.messages.length -1 ].time;
+			thread.snippet = thread.messages[thread.messages.length -1 ].snippet;
+			thread.date = thread.messages[thread.messages.length -1 ].date;
+			thread.subject = thread.messages[thread.messages.length -1 ].subject;
 			loadThreads(threads, checkNew);
 		});
     });
@@ -274,23 +283,8 @@ loadMoreEmails = function(){
 }
 
 
-
-
-viewEmail = function(index){
-	app.main_page = 1;
-	app.selectedThread = app.threads[index];
-	app.selectedThreadId = index;
-	// app.back_content = label;
-
-	app.selectedemail = index;
-	console.log("viewEmail : ");
-	// console.log(index);
-	// console.log(app.threads[index]);
-	var thread = app.threads[index];
-	var lastest_id = thread.messages[0].id;
-	 // Fetch only the emails in the user's inbox.
-
-	gmail.messages.get({userId: 'me', id:lastest_id, format:'full'}).then(function(resp) {
+retrieveAndFillEmailBody = function (id, index){
+	gmail.messages.get({userId: 'me', id:id, format:'full'}).then(function(resp) {
 		console.log("messages.get");
 		console.log(resp);
 		// console.log(resp.result.payload.body);
@@ -318,7 +312,7 @@ viewEmail = function(index){
 		    		// body_str = atob(payload.parts[1].body.data)
 			    	body_str = body_str.replace(/<a href="/g, '<a target="_blank" href="');
 		    		app.email_body = body_str;
-		    		body_holder = document.getElementById('body_holder');
+		    		body_holder = document.getElementById('body_holder-'+index);
 					body_holder.innerHTML = body_str;
 			    	
 			    	// body_str = atob(payload.parts[1].body.data);
@@ -341,8 +335,39 @@ viewEmail = function(index){
 	});
 }
 
+viewEmail = function(index){
+	app.main_page = 1;
+	app.selectedThread = $.extend({},app.threads[index]);
+	// app.selectedThread.messages = $.extend({},app.selectedThread.messages.reverse());
+	app.selectedThreadId = index;
+	// app.back_content = label;
+
+	var length = app.selectedThread.messages.length;
+
+	app.selectedemail = index;
+	console.log("viewEmail : ");
+	// console.log(index);
+	// console.log(app.threads[index]);
+	var thread = app.threads[index];
+	var latest_id = thread.messages[length-1].id;
+	 // Fetch only the emails in the user's inbox.
+
+	retrieveAndFillEmailBody(latest_id, length-1);
+
+	for (var i = 0; i < length - 1; i = i + 1){
+		console.log(i);
+		retrieveAndFillEmailBody(app.selectedThread.messages[i].id, i);
+	}	
+
+
+}
+
+app.onSigninFailure = function(e, detail, sender) {
+	console.log("onSigninFailure")
+}
 app.onSigninSuccess = function(e, detail, sender) {
-	this.isAuthenticated = true;
+	console.log("onSigninSuccess");
+	app.isAuthenticated = true;
 	// Cached data? We're already using it. Bomb out before making unnecessary requests.
 	if ((app.threads && app.users) || DEBUG) {
 	return;
@@ -378,6 +403,8 @@ app.onSigninSuccess = function(e, detail, sender) {
 		    app.users[app.user.name] = app.user.profile; // signed in user.
 		  });
 
+		  console.log("redirect");
+		  window.location.replace("/#!/inbox");
 		});//plus me
 
   	});//load plus
