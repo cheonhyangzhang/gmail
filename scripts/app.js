@@ -404,8 +404,10 @@ app.onSigninSuccess = function(e, detail, sender) {
 		  });
 
 		  console.log("redirect");
+		  console.log(window.location.origin);
+		  console.log(window.location.href);
 		  console.log(window.location);
-		  window.location.replace(window.location.origin + "/#!/inbox");
+		  // window.location.replace(window.location.origin + "/#!/inbox");
 		});//plus me
 
   	});//load plus
