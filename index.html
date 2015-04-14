@@ -12,6 +12,7 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="shortcut icon" href="images/gmail.ico">
     <link rel="import" href="elements.html">
     <link rel="import" href="route.html">
     <link rel="stylesheet" href="app.css">
@@ -28,12 +29,21 @@
               <section route="login" >
                   <div id="loginscreen" layout vertical center-center fit
                      class="{{ {show: !isAuthenticated} | tokenList }}">
+                  <div>
+                    <img style="padding:20px;" src="images/gmail.png" width="150" ></img>
+                    <img style="padding:20px;" src="images/polymer.svg" width="150"></img>
+                  </div>
+                  <div style="padding:20px;font-size:20px;">
+                    A Material Desgin Gmail Web Application using Polymer 
+                  </div>
                   <google-signin width="wide" height="tall"
                       clientId="734681955886-tfnfanpm9kqt60lvjrjqj9mc6emv80qa.apps.googleusercontent.com"
                       scopes="profile email https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/gmail.modify"
                       on-google-signin-success="{{onSigninSuccess}}"
                       on-google-signin-failure="{{onSigninFailure}}"></google-signin>
+
                   </div>
+
               </section>
               <section route="inbox" layout vertical>
                     <core-header-panel flex layout vertical mode="seamed">
