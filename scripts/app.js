@@ -367,7 +367,7 @@ app.onSigninFailure = function(e, detail, sender) {
 }
 app.onSigninSuccess = function(e, detail, sender) {
 	console.log("onSigninSuccess a");
-	app.isAuthenticated = true;
+	// app.isAuthenticated = true;
 	// Cached data? We're already using it. Bomb out before making unnecessary requests.
 	if ((app.threads && app.users) || DEBUG) {
 	return;
