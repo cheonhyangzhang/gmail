@@ -366,7 +366,7 @@ app.onSigninFailure = function(e, detail, sender) {
 	console.log("onSigninFailure")
 }
 app.onSigninSuccess = function(e, detail, sender) {
-	console.log("onSigninSuccess");
+	console.log("onSigninSuccess a");
 	app.isAuthenticated = true;
 	// Cached data? We're already using it. Bomb out before making unnecessary requests.
 	if ((app.threads && app.users) || DEBUG) {
@@ -404,7 +404,8 @@ app.onSigninSuccess = function(e, detail, sender) {
 		  });
 
 		  console.log("redirect");
-		  window.location.replace("/#!/inbox");
+		  console.log(window.location);
+		  window.location.replace(window.location.origin + "/#!/inbox");
 		});//plus me
 
   	});//load plus
