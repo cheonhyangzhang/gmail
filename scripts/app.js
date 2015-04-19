@@ -53,6 +53,11 @@ app.movetofolder = null;
 // app.list_q = "category:primary || label:important";
 app.list_q = nowSearchTerm();
 app.labels = [];
+
+app.draftTo = "";
+app.draftSubject = "";
+app.draftBody = "";
+
 var gmail = null;
 var PROFILE_IMAGE_SIZE = 30;
 var labels_search = {
@@ -64,7 +69,14 @@ var labels_search = {
 	'SENT':'label:sent !is:chats'
 }
 
-
+app.showNewEmail = function(e){
+	console.log("showNewEmail");
+	var dialog = document.querySelector('#newEmail')
+	console.log(dialog);
+	if (dialog != null){
+		dialog.open();
+	}
+}
 
 var FROM_HEADER_REGEX = new RegExp(/"?(.*?)"?\s?<(.*)>/);
 
@@ -407,7 +419,7 @@ app.onSigninSuccess = function(e, detail, sender) {
 		  // console.log(window.location.origin);
 		  // console.log(window.location.href);
 		  // console.log(window.location);
-		  var current_url = window.locaiton.href;
+		  var current_url = window.location.href;
 		  if (current_url.indexOf("#!/inbox") < 0){
 			  window.location.replace(window.location.href + "#!/inbox");
 		  }

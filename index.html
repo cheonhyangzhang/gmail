@@ -46,11 +46,33 @@
 
               </section>
               <section route="inbox" layout vertical>
-                    <paper-dialog heading="Dialog Title">
-                      <p>Some content</p>
-                    </paper-dialog>
+
+                    <paper-action-dialog closeSelector="[affirmative]" id="newEmail" style="width:70%;height:70%;">
+                          <core-header-panel flex fit layout vertical mode="seamed">
+                            <core-toolbar class="medium-tall" style="background-color:white;">
+                              <paper-input-decorator class="top" flex style="color:black;" flex label="To">
+                                    <input  is="draft-to" value="{{draftTo}}"> 
+                              </paper-input-decorator>
+                              <br>
+                              <paper-input-decorator class="bottom" flex style="color:black;" flex label="Subject">
+                                    <input  is="draft-subject" value="{{draftSubject}}"> 
+                              </paper-input-decorator>
+                            </core-toolbar>
+                              <div style="padding:20px;">
+                                  <paper-autogrow-textarea id="draft-bodya" style="width:100%;">
+                                  <textarea id="draft-bodyt" value="{{draftBody}}" placeholder="Say something"></textarea>
+                              </paper-autogrow-textarea>
+                              </div>
+                            
+                          </core-header-panel>
+                       
+                          <paper-button dismissive style="background-color:#0277BD;color:white;"> SEND </paper-button>
+                          <paper-icon-button icon="delete" affirmative><paper-icon-button>
+
+                    </paper-action-dialog>
+
                     <core-header-panel flex layout vertical mode="seamed">
-                      <core-toolbar class="toolbar-smaller">
+                      <core-toolbar class="toolbar-smaller" >
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
                         <div id="heading" style="width:185px;">{{heading}}</div>
@@ -207,7 +229,7 @@
 
 
                       </core-drawer-panel>
-                     <paper-fab class="down-right-button" icon="add"></paper-fab>
+                     <paper-fab on-tap ="{{showNewEmail}}" class="down-right-button" icon="add"></paper-fab>
                     </core-header-panel>
               </section>
 
