@@ -407,7 +407,10 @@ app.onSigninSuccess = function(e, detail, sender) {
 		  // console.log(window.location.origin);
 		  // console.log(window.location.href);
 		  // console.log(window.location);
-		  window.location.replace(window.location.href + "#!/inbox");
+		  var current_url = window.locaiton.href;
+		  if (current_url.indexOf("#!/inbox") < 0){
+			  window.location.replace(window.location.href + "#!/inbox");
+		  }
 		});//plus me
 
   	});//load plus
