@@ -50,6 +50,7 @@ app.lastMovedThread = null;
 app.lastMovedThreadId = null;
 app.lastMovedThreadFolder = null;
 app.movetofolder = null;
+app.newEmailOpen = false;
 // app.list_q = "category:primary || label:important";
 app.list_q = nowSearchTerm();
 app.labels = [];
@@ -76,6 +77,62 @@ app.showNewEmail = function(e){
 	if (dialog != null){
 		dialog.open();
 	}
+}
+function encodeURL(str){
+    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+}
+app.closeNewEmail = function(e){
+	console.log("closeNewEmail");	
+	console.log(app.newEmailOpen);
+	app.newEmailOpen = false;
+	console.log(app.newEmailOpen);
+}
+app.sendEmail = function(e){
+	console.log("sending email");
+	console.log(app.draftTo);
+	console.log(app.draftSubject);
+	console.log(app.draftBody);
+
+	if (typeof(app.draftTo) == 'undefined' || app.draftTo == ""){
+		document.querySelector('#emailNotSent').show();
+		return;
+	}
+	var mail = {  
+	    // "to": "email1@example.com, email2@example.com",
+	    "to": app.draftTo,
+	    "subject": app.draftSubject,
+	    "fromName": app.user.name,
+	    "from": app.user.email,
+	    "body": app.draftBody
+	    // "cids": [],
+    	// "attaches" : []
+	}
+
+	var raw_email = createMimeMessage(mail);
+	var encoded_raw_email = Base64.encode(raw_email)
+	console.log(raw_email);
+	console.log(encoded_raw_email);
+	var replaced = encodeURL(encoded_raw_email);
+  	var request = gapi.client.gmail.users.messages.send({
+    	'userId': 'me',
+      	'raw': replaced
+  	});
+  	request.execute(function(resp){
+  		console.log("Send email resp:");
+  		console.log(resp);
+  		if (!resp.code){
+  			app.draftTo = '';
+  			app.draftSubject = '';
+  			app.draftBody = '';
+  			app.closeNewEmail();
+  			document.querySelector('#emailSent').show();
+
+  		}
+  		else{
+  			document.querySelector('#emailNotSent').show();
+  		}
+  	});
+
 }
 
 var FROM_HEADER_REGEX = new RegExp(/"?(.*?)"?\s?<(.*)>/);
