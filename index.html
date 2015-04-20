@@ -47,7 +47,7 @@
               </section>
               <section route="inbox" layout vertical>
                     <!-- closeSelector="[affirmative, dismissive]" -->
-                    <paper-action-dialog opened="{{newEmailOpen}}" closeSelector="[affirmative]" id="newEmail" style="width:70%;height:70%;">
+                    <paper-action-dialog transition="core-transition-center" opened="{{newEmailOpen}}" closeSelector="[affirmative]" id="newEmail" style="width:70%;height:70%;">
                           <core-header-panel flex fit layout vertical mode="seamed">
                             <core-toolbar class="medium-tall" style="background-color:white;">
                               <paper-input-decorator class="top" flex style="color:black;" flex floatingLabel="true" label="To">
