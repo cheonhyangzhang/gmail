@@ -87,6 +87,11 @@ app.closeNewEmail = function(e){
 	app.newEmailOpen = false;
 	console.log(app.newEmailOpen);
 }
+app.deleteDraft = function(e){
+	app.draftTo = "";
+	app.draftSubject = "";
+	app.draftBody = "";
+}
 app.sendEmail = function(e){
 	console.log("sending email");
 	console.log(app.draftTo);
@@ -121,9 +126,7 @@ app.sendEmail = function(e){
   		console.log("Send email resp:");
   		console.log(resp);
   		if (!resp.code){
-  			app.draftTo = '';
-  			app.draftSubject = '';
-  			app.draftBody = '';
+  			app.deleteDraft();	
   			app.closeNewEmail();
   			document.querySelector('#emailSent').show();
 

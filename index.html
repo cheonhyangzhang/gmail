@@ -50,11 +50,11 @@
                     <paper-action-dialog opened="{{newEmailOpen}}" closeSelector="[affirmative]" id="newEmail" style="width:70%;height:70%;">
                           <core-header-panel flex fit layout vertical mode="seamed">
                             <core-toolbar class="medium-tall" style="background-color:white;">
-                              <paper-input-decorator class="top" flex style="color:black;" flex label="To">
+                              <paper-input-decorator class="top" flex style="color:black;" flex floatingLabel="true" label="To">
                                     <input  is="draft-to" value="{{draftTo}}"> 
                               </paper-input-decorator>
                               <br>
-                              <paper-input-decorator class="bottom" flex style="color:black;" flex label="Subject">
+                              <paper-input-decorator class="bottom" flex style="color:black;" flex floatingLabel="true"  label="Subject">
                                     <input  is="draft-subject" value="{{draftSubject}}"> 
                               </paper-input-decorator>
                             </core-toolbar>
@@ -68,7 +68,7 @@
                           </core-header-panel>
                        
                           <paper-button on-tap="{{sendEmail}}" dismissive style="background-color:#0277BD;color:white;"> SEND </paper-button>
-                          <paper-icon-button icon="delete" affirmative><paper-icon-button>
+                          <paper-icon-button on-tap="{{deleteDraft}}" icon="delete" affirmative><paper-icon-button>
 
                     </paper-action-dialog>
 
