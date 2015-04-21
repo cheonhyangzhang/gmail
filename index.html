@@ -53,6 +53,7 @@
                               <paper-input-decorator class="top" flex style="color:black;" flex floatingLabel="true" label="To">
                                     <input  is="draft-to" value="{{draftTo}}"> 
                               </paper-input-decorator>
+
                               <br>
                               <paper-input-decorator class="bottom" flex style="color:black;" flex floatingLabel="true"  label="Subject">
                                     <input  is="draft-subject" value="{{draftSubject}}"> 
@@ -86,11 +87,6 @@
                          <paper-icon-button icon="apps">
                         </paper-icon-button> 
                         <core-image class="avatar" src="{{user.profile_image}}"></core-image>
-<!--                         <google-signin width="wide" height="tall"
-                          clientId="734681955886-tfnfanpm9kqt60lvjrjqj9mc6emv80qa.apps.googleusercontent.com"
-                          scopes="profile email https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/gmail.modify"
-                          on-google-signin-success="{{onSigninSuccess}}"
-                          on-google-signin-failure="{{onSigninFailure}}"></google-signin> -->
                       </core-toolbar>
 
 
@@ -206,13 +202,29 @@
                                             <core-header-panel flex>
                                              <core-toolbar class="toolbar-smaller">
                                               <span flex>
-                                              {{email_subject}} {{message.snippet}}
+                                              {{email_subject}} 
                                               </span>
                                               </core-toolbar>
 
                                               <template repeat ="{{message, index in selectedThread.messages}}">
-                                                <div flex class="email-body">  
+                                                <div flex class="email-body" layout vertical>  
+                                                  <div layout horizontal center-center>
+                                                    <template if="{{users[message.from.name]}}"> 
+                                                      <core-image class="avatar" src="{{users[message.from.name]}}"></core-image>
+                                                    </template>
+                                                    <template if="{{!users[message.from.name]}}">
+                                                      <div class="avatar">
+                                                        <span style="background-color:{{message.from.initial_color}}" class="letter" layout horizontal center-center>{{message.from.initial}}</span>
+                                                      </div>
+                                                    </template>
+                                                    <span >{{message.from.name}}</span>
+                                                      <span flex></span>
+                                                      <span >{{message.time}} - {{message.date}}</span>
+                                                  </div>
+                                                 
+                                                  <div style="padding-top:20px;padding-left:45px;">
                                                   <div id="body_holder-{{index}}">
+                                                  </div>
                                                   </div>
                                                 </div>
                                               </template>
@@ -243,6 +255,8 @@
     <paper-toast id="emailSent" text="Email Sent" ></paper-toast>
     <paper-toast id="emailNotSent" text="Email Not Sent" ></paper-toast>
     <paper-toast id="emailArchived" text="Archived" ><div onclick="unarchiveEmail()" style="color:#eeff41;"> Undo </div></paper-toast>
+
+
 
         
     </template>

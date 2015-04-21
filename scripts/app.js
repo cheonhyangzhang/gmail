@@ -258,16 +258,24 @@ app.fetchMail = function(q, checkNew) {
 		var req = gmail.threads.get({userId: 'me', 'id': thread.id});
 		batch.add(req);
 		req.then(function(resp) {
-			thread.messages = processMessage(resp);
+			thread.messages = processMessage(resp).reverse();
 			thread.from = {};
-			thread.from.name = thread.messages[thread.messages.length -1 ].from.name;
-			thread.from.email = thread.messages[thread.messages.length -1 ].from.email;
-			thread.from.initial = thread.messages[thread.messages.length -1 ].from.initial;
-			thread.from.initial_color = thread.messages[thread.messages.length -1 ].from.initial_color;
-			thread.time = thread.messages[thread.messages.length -1 ].time;
-			thread.snippet = thread.messages[thread.messages.length -1 ].snippet;
-			thread.date = thread.messages[thread.messages.length -1 ].date;
-			thread.subject = thread.messages[thread.messages.length -1 ].subject;
+			// thread.from.name = thread.messages[thread.messages.length -1 ].from.name;
+			// thread.from.email = thread.messages[thread.messages.length -1 ].from.email;
+			// thread.from.initial = thread.messages[thread.messages.length -1 ].from.initial;
+			// thread.from.initial_color = thread.messages[thread.messages.length -1 ].from.initial_color;
+			// thread.time = thread.messages[thread.messages.length -1 ].time;
+			// thread.snippet = thread.messages[thread.messages.length -1 ].snippet;
+			// thread.date = thread.messages[thread.messages.length -1 ].date;
+			// thread.subject = thread.messages[thread.messages.length -1 ].subject;
+			thread.from.name = thread.messages[0 ].from.name;
+			thread.from.email = thread.messages[0 ].from.email;
+			thread.from.initial = thread.messages[0 ].from.initial;
+			thread.from.initial_color = thread.messages[0 ].from.initial_color;
+			thread.time = thread.messages[0 ].time;
+			thread.snippet = thread.messages[0 ].snippet;
+			thread.date = thread.messages[0 ].date;
+			thread.subject = thread.messages[0 ].subject;
 			loadThreads(threads, checkNew);
 		});
     });
@@ -365,12 +373,18 @@ retrieveAndFillEmailBody = function (id, index){
 	    // var payload = resp.result.payload;
 	    var payloads = [];
 	    payloads.push(resp.result.payload);
+	    console.log("payloads:");
+	    console.log(payloads);
 	   	while(payloads.length > 0){
 	   		var payload = payloads.shift();
+	   		console.log("payload :");
+	   		console.log(payload);
 	   		if (payload.body.size != 0){
 		    	body_str = Base64.decode(payload.body.data);
 		    	body_holder = document.getElementById('body_holder');
 		    	body_str.replace(/<a href="/g, '<a target="_blank" href="');
+		    	conosle.log("body_str");
+		    	conosle.log(body_str);
 				body_holder.innerHTML = body_str;
 		    }
 		    else{
@@ -385,6 +399,8 @@ retrieveAndFillEmailBody = function (id, index){
 			    	body_str = body_str.replace(/<a href="/g, '<a target="_blank" href="');
 		    		app.email_body = body_str;
 		    		body_holder = document.getElementById('body_holder-'+index);
+			    	conosle.log("body_str");
+			    	conosle.log(body_str);
 					body_holder.innerHTML = body_str;
 			    	
 			    	// body_str = atob(payload.parts[1].body.data);
@@ -410,19 +426,17 @@ retrieveAndFillEmailBody = function (id, index){
 viewEmail = function(index){
 	app.main_page = 1;
 	app.selectedThread = $.extend({},app.threads[index]);
-	// app.selectedThread.messages = $.extend({},app.selectedThread.messages.reverse());
 	app.selectedThreadId = index;
-	// app.back_content = label;
 
+	console.log(app.selectedThread);
 	var length = app.selectedThread.messages.length;
 
 	app.selectedemail = index;
 	console.log("viewEmail : ");
-	// console.log(index);
-	// console.log(app.threads[index]);
 	var thread = app.threads[index];
 	var latest_id = thread.messages[length-1].id;
 	 // Fetch only the emails in the user's inbox.
+	console.log(thread);
 
 	retrieveAndFillEmailBody(latest_id, length-1);
 
@@ -473,6 +487,7 @@ app.onSigninSuccess = function(e, detail, sender) {
 		  getAllUserProfileImages(users, null, function(users) {
 		    app.users = users;
 		    app.users[app.user.name] = app.user.profile; // signed in user.
+		    console.log(app.users);
 		  });
 
 		  console.log("redirect");
