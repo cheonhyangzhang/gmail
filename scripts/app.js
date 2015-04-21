@@ -383,8 +383,6 @@ retrieveAndFillEmailBody = function (id, index){
 		    	body_str = Base64.decode(payload.body.data);
 		    	body_holder = document.getElementById('body_holder');
 		    	body_str.replace(/<a href="/g, '<a target="_blank" href="');
-		    	conosle.log("body_str");
-		    	conosle.log(body_str);
 				body_holder.innerHTML = body_str;
 		    }
 		    else{
@@ -399,8 +397,6 @@ retrieveAndFillEmailBody = function (id, index){
 			    	body_str = body_str.replace(/<a href="/g, '<a target="_blank" href="');
 		    		app.email_body = body_str;
 		    		body_holder = document.getElementById('body_holder-'+index);
-			    	conosle.log("body_str");
-			    	conosle.log(body_str);
 					body_holder.innerHTML = body_str;
 			    	
 			    	// body_str = atob(payload.parts[1].body.data);
