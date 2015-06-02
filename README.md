@@ -3,6 +3,8 @@
 ## Overview
 A mockup web app using [Polymer](https://www.polymer-project.org/0.5/) framework ( or library ). This project is using Polymer 0.5 for now. There is [Polymer 0.8](https://www.polymer-project.org/0.8/) as of now, but it is in alpha. 
 
+**Note**:This project is using [Polymer 0.5](https://www.polymer-project.org/0.5/). As of today, June 2, the [Polymer 1.0](https://www.polymer-project.org/1.0/) has been out. The 1.0 version has significant changes compared to 0.5 version. A lot of components are renamed. So if you are learning Polymer and looking for some examples to learn. This app is already out of date. 
+
 
 **Note**: This mockup web is still work in progress. Not all of the gmail features have been implemented. Since the app is using Google's Gmail Rest API, only features that are supported by Gmail REST API will be implemented in the future. 
 
