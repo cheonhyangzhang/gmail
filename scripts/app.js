@@ -69,7 +69,16 @@ var labels_search = {
 	'DRAFTS':'label:drafts !is:chats',
 	'SENT':'label:sent !is:chats'
 }
-
+app._computeProfileColor = function(color){
+	return "background-color:" + color + ";";
+}
+app._hasProfileImage = function(dict, val){
+	//todo
+	//need to find a way to determine if shows the avatar
+	//need to wait getAllUsers finish
+	console.log("_hasProfileImage");
+	return false;
+}
 app.showNewEmail = function(e){
 	console.log("showNewEmail");
 	var dialog = document.querySelector('#newEmail')
@@ -149,6 +158,7 @@ app.showLabels = function(e){
 
 
 app.searchpressed = function(e){
+	console.log("searchpressed");
 	if (e.which == 13){
 		if (typeof(app.search) !="undefined" && app.search != ""){
 			searchEmails(app.search);
@@ -236,15 +246,36 @@ loadThreads = function(threads, checkNew){
 		app.threads = app.threads.concat(threads);
 		app.loading = false;
 		app.bottom_loading = false;
-		console.log(threads);
+		// console.log(threads);
 	}	
+}
+app._computeBodyId = function(index){
+	console.log("_computeBodyId");
+	console.log(index);
+	return "body_holder-" + index;
+}
+app.appArchiveEmail = function(event){
+	console.log("appArchiveEmail");
+	archiveEmail(app.selectedThread.id);
+}
+app.appTrashEmail = function(event){
+	console.log("appTrashEmail");
+	trashEmail(app.selectedThread.id);
+}
+app.appUntrashEmail = function(event){
+	console.log("appUntrashEmail");
+	untrashEmail();
+}
+app.appUnarchiveEmail = function(event){
+	console.log("appUnarchiveEmail");
+	unarchiveEmail();
 }
 app.fetchMail = function(q, checkNew) {
 			app.alldone = false;
 	console.log("fetchMail");	
 	 // Fetch only the emails in the user's inbox.
 	gmail.threads.list({userId: 'me', q: q, 'maxResults':10, pageToken:nextPageToken}).then(function(resp) {
-		console.log(resp);
+		// console.log(resp);
 		if (!resp.result.threads){
 			app.loading = false;
 			app.alldone = true;
@@ -381,7 +412,7 @@ retrieveAndFillEmailBody = function (id, index){
 	   		console.log(payload);
 	   		if (payload.body.size != 0){
 		    	body_str = Base64.decode(payload.body.data);
-		    	body_holder = document.getElementById('body_holder');
+		    	body_holder = document.getElementById('body_holder-' + index);
 		    	body_str.replace(/<a href="/g, '<a target="_blank" href="');
 				body_holder.innerHTML = body_str;
 		    }
@@ -419,7 +450,13 @@ retrieveAndFillEmailBody = function (id, index){
 	});
 }
 
-viewEmail = function(index){
+app.viewEmail = function(event){
+	console.log("viewEmail");
+	console.log(event);
+	var index = event.model.index;
+	console.log(index);
+	// console.log(detail);
+	// console.log(sender);
 	app.main_page = 1;
 	app.selectedThread = $.extend({},app.threads[index]);
 	app.selectedThreadId = index;
@@ -459,8 +496,8 @@ app.onSigninSuccess = function(e, detail, sender) {
 		console.log("Loaded gmail")
 		gmail = gapi.client.gmail.users;
 		gmail.labels.list({userId:'me'}).then(function(resp){
-			console.log("list labels");
-			console.log(resp);
+			// console.log("list labels");
+			// console.log(resp);
 
 			app.labels = resp.result.labels.sort(labelCompare);
 		});
@@ -481,9 +518,11 @@ app.onSigninSuccess = function(e, detail, sender) {
 		  var users = {};
 
 		  getAllUserProfileImages(users, null, function(users) {
+		  	console.log("getAllUserProfileImages");
 		    app.users = users;
+		  	console.log(app.users);
 		    app.users[app.user.name] = app.user.profile; // signed in user.
-		    console.log(app.users);
+		    // console.log(app.users);
 		  });
 
 		  console.log("redirect");

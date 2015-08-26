@@ -1,8 +1,8 @@
 {
   "name": "google-signin",
-  "version": "0.3.0",
+  "version": "1.0.2",
   "description": "Web components to authenticate with Google services",
-  "homepage": "http://googlewebcomponents.github.io/google-signin",
+  "homepage": "https://googlewebcomponents.github.io/google-signin",
   "main": "google-signin.html",
   "authors": [
     "Addy Osmani",
@@ -10,12 +10,8 @@
   ],
   "license": "Apache-2",
   "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests",
-    "../"
+    "/.*",
+    "/test/"
   ],
   "keywords": [
     "web-component",
@@ -26,14 +22,16 @@
     "authentication"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.5.4",
-    "core-icon": "Polymer/core-icon#~0.5.4",
-    "core-icons": "Polymer/core-icons#~0.5.4",
-    "core-signals": "Polymer/core-signals#~0.5.1",
-    "font-roboto": "Polymer/font-roboto#~0.5.4",
-    "google-apis": "GoogleWebComponents/google-apis#~0.4.3",
-    "paper-button": "Polymer/paper-button#~0.5.4",
-    "paper-ripple": "Polymer/paper-ripple#~0.5.4",
-    "paper-shadow": "Polymer/paper-shadow#~0.5.4"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "font-roboto": "PolymerElements/font-roboto#^1.0.0",
+    "iron-icon": "PolymerElements/iron-icon#^1.0.0",
+    "iron-icons": "PolymerElements/iron-icons#^1.0.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "paper-ripple": "PolymerElements/paper-ripple#^1.0.0",
+    "paper-material": "PolymerElements/paper-material#^1.0.0",
+    "google-apis": "GoogleWebComponents/google-apis#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.2"
   }
 }

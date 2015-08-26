@@ -25,6 +25,7 @@
 }
 
 #button {
+  position: relative;
   outline: none;
   font-size: 14px;
   font-weight: 400;
@@ -33,7 +34,7 @@
   border-radius: inherit;
 }
 
-core-icon {
+iron-icon {
   width: 22px;
   height: 22px;
   margin: 6px;
@@ -136,7 +137,7 @@ core-icon {
   font-weight: 700;
 }
 
-.height-tall core-icon {
+.height-tall iron-icon {
   width: 30px;
   height: 30px;
   margin: 8px;
@@ -149,7 +150,7 @@ core-icon {
   font-size: 11px;
 }
 
-.height-short core-icon {
+.height-short iron-icon {
   width: 16px;
   height: 16px;
   margin: 3px;
@@ -187,7 +188,7 @@ core-icon {
 }
 
 .brand-google.theme-light #ripple {
-  color: #d1d1d1;
+  color: #444;
 }
 
 :host([noink]) .brand-google.theme-light:hover,
@@ -221,7 +222,7 @@ core-icon {
 }
 
 .brand-google-plus.theme-light #ripple {
-  color: #d1d1d1;
+  color: #400;
 }
 
 :host([noink]) .brand-google-plus.theme-light:hover,
