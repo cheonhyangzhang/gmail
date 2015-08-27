@@ -42,21 +42,7 @@
                   </div>
               </section>
               <section route="inbox" class="layout vertical fit">
-             <!--        <paper-dialog style="width:90%;height:80%;" id="newEmail">
-                      <paper-input label="To">
-                      </paper-input>
-                      <paper-input label="Subject">
-                      </paper-input>
-                      <paper-dialog-scrollable>
-                        <iron-autogrow-textarea style="width:100%;border:none;" value="{{draftBody}}" placeholder="Say something"  id="draft-bodya" >
-                      </iron-autogrow-textarea>
-                      </paper-dialog-scrollable>
-                      <div class="buttons">
-                        <paper-button dialog-dismiss>Cancel</paper-button>
-                        <paper-button dialog-confirm>Accept</paper-button>
-                      </div>
-                    </paper-dialog> -->
-                    <paper-dialog style="position:fixed;top:10px;right:10px;width:90%;height:80%;" id="newEmail" entry-animation="scale-up-animation"
+                    <paper-dialog style="position:fixed;top:60px;right:10px;width:90%;height:80%;" id="newEmail" entry-animation="scale-up-animation"
                                   exit-animation="fade-out-animation">
            
                       <paper-input label="To" value="{{draftTo}}">
@@ -67,14 +53,13 @@
                       <iron-autogrow-textarea style="width:100%;border:none;" bind-value="{{draftBody}}" placeholder="Say something"  id="draft-bodya" >
                       </iron-autogrow-textarea>
                       </div>
-                      <div style="position:fixed;top:40px;right:60px;" class="buttons">
+                      <div style="position:fixed;top:90px;right:60px;" class="buttons">
                         <paper-button on-click="deleteDraft" dialog-dismiss>Drop</paper-button>
                         <paper-button on-tap="sendEmail" dialog-confirm>SEND</paper-button>
                       </div>
                     </paper-dialog>
 
                     <paper-header-panel class="flex layout vertical">
-                      <!-- Top Bar  start
                       <paper-toolbar style="background-color:#00B0FF" class="toolbar-smaller">
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
@@ -90,7 +75,6 @@
                         </paper-icon-button> 
                         <iron-image class="avatar" src="{{user.profile_image}}"></iron-image>
                       </paper-toolbar>
-                      <!-- Top Bar  end -->
 
                      <paper-drawer-panel id="drawerPanel" flex>
                           <paper-menu id="side-menu" drawer>
