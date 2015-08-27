@@ -25,7 +25,7 @@
       <more-route-selector>
             <iron-pages selected="{{route}}" class="fullbleed fit">
               <section route="login" >
-                  <div id="loginscreen" layout vertical center-center fit
+                  <div id="loginscreen" class="layout vertical center-center fit"
                      class="{{ {show: !isAuthenticated} | tokenList }}">
                   <div>
                     <img style="padding:20px;" src="images/gmail.png" width="150" ></img>
@@ -42,8 +42,39 @@
                   </div>
               </section>
               <section route="inbox" class="layout vertical fit">
+             <!--        <paper-dialog style="width:90%;height:80%;" id="newEmail">
+                      <paper-input label="To">
+                      </paper-input>
+                      <paper-input label="Subject">
+                      </paper-input>
+                      <paper-dialog-scrollable>
+                        <iron-autogrow-textarea style="width:100%;border:none;" value="{{draftBody}}" placeholder="Say something"  id="draft-bodya" >
+                      </iron-autogrow-textarea>
+                      </paper-dialog-scrollable>
+                      <div class="buttons">
+                        <paper-button dialog-dismiss>Cancel</paper-button>
+                        <paper-button dialog-confirm>Accept</paper-button>
+                      </div>
+                    </paper-dialog> -->
+                    <paper-dialog style="position:fixed;top:10px;right:10px;width:90%;height:80%;" id="newEmail" entry-animation="scale-up-animation"
+                                  exit-animation="fade-out-animation">
+           
+                      <paper-input label="To" value="{{draftTo}}">
+                      </paper-input>
+                      <paper-input label="Subject" value="{{draftSubject}}">
+                      </paper-input>
+                      <div style="withd:100%;padding-left:22px;">
+                      <iron-autogrow-textarea style="width:100%;border:none;" bind-value="{{draftBody}}" placeholder="Say something"  id="draft-bodya" >
+                      </iron-autogrow-textarea>
+                      </div>
+                      <div style="position:fixed;top:40px;right:60px;" class="buttons">
+                        <paper-button on-click="deleteDraft" dialog-dismiss>Drop</paper-button>
+                        <paper-button on-tap="sendEmail" dialog-confirm>SEND</paper-button>
+                      </div>
+                    </paper-dialog>
+
                     <paper-header-panel class="flex layout vertical">
-                      <!-- Top Bar  start -->
+                      <!-- Top Bar  start
                       <paper-toolbar style="background-color:#00B0FF" class="toolbar-smaller">
                         <paper-icon-button onclick="toggleDrawer()" icon="menu" id="navicon" >
                         </paper-icon-button> 
@@ -136,6 +167,20 @@
 
                                  
                                   <section style="width:95%;margin-left:auto;margin-right:auto;margin-top:20px;margin-bottom:20px;">
+                                    <paper-dialog style="position:fixed;top:74px;right:8px;" id="labels_list" entry-animation="scale-up-animation"
+                                                        exit-animation="fade-out-animation">
+                                      <paper-menu>
+                                       <template is="dom-repeat" items="{{labels}}">
+                                        <template is="dom-if" if="{{_isUserLable(item)}}">
+                                        <paper-item class="menu-item" on-click="appMoveEmailTo">
+                                            <span>{{item.name}}</span>
+                                        </paper-item>
+                                        </template>
+                                      </template>
+                                      </paper-menu>
+                                    </paper-dialog>
+
+
                                     <paper-card class="layout horizontal flex">
                                       <div class="layout horizontal flex">
                                         <paper-button onclick="goback()">
@@ -150,7 +195,7 @@
                                         <paper-button on-click="appTrashEmail">
                                           <iron-icon icon="delete"></iron-icon>
                                         </paper-button>
-                                        <paper-button on-tap="{{showLabels}}" tabindex="0">
+                                        <paper-button on-tap="showLabels">
                                           <iron-icon icon="folder"></iron-icon>
                                         </paper-button>
                                    <!--      <paper-dropdown autoFocus="{{true}}" id="labels_list" halign="right" class="dropdown">

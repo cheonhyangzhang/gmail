@@ -69,6 +69,14 @@ var labels_search = {
 	'DRAFTS':'label:drafts !is:chats',
 	'SENT':'label:sent !is:chats'
 }
+app._isUserLable = function(label){
+	if (label.type == 'user'){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
 app._computeProfileColor = function(color){
 	return "background-color:" + color + ";";
 }
@@ -84,7 +92,10 @@ app.showNewEmail = function(e){
 	var dialog = document.querySelector('#newEmail')
 	console.log(dialog);
 	if (dialog != null){
+		console.log("dialog open");
+		// document.querySelector('#labels_list').open();
 		dialog.open();
+
 	}
 }
 function encodeURL(str){
@@ -97,6 +108,7 @@ app.closeNewEmail = function(e){
 	console.log(app.newEmailOpen);
 }
 app.deleteDraft = function(e){
+	console.log("deleteDraft");
 	app.draftTo = "";
 	app.draftSubject = "";
 	app.draftBody = "";
@@ -253,6 +265,11 @@ app._computeBodyId = function(index){
 	console.log("_computeBodyId");
 	console.log(index);
 	return "body_holder-" + index;
+}
+app.appMoveEmailTo = function(event){
+	console.log("appMoveEmailTo");
+	moveEmailTo(app.selectedThread.id,event.model.item.id,event.model.item.name);
+	$('#labels_list').close();
 }
 app.appArchiveEmail = function(event){
 	console.log("appArchiveEmail");
