@@ -1,4 +1,6 @@
 # gmail
+## Note
+I am curerntly working to migrate this project to use Polymer 1.0. The migration work is still WIP.
 
 ## Overview
 A mockup web app using [Polymer](https://www.polymer-project.org/0.5/) framework ( or library ). This project is using Polymer 0.5 for now. There is [Polymer 0.8](https://www.polymer-project.org/0.8/) as of now, but it is in alpha. 
