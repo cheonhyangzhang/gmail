@@ -28,7 +28,7 @@ A mockup web app using [Polymer](https://www.polymer-project.org/0.5/) framework
 * Reply email is currently under developement.
 
 ## Demo
-The stable version is hosted in [Google's App Engine](https://gmail-polymer.appspot.com/).
+The stable version is hosted in [Google's App Engine](https://0-1-dot-gmail-polymer.appspot.com/).
 
 Sometimes it keeps refreshing for the first time. In this case, copy the url and paste it in a new tab will work.
 The first time you access the app, you will need to sign in with your Google account. Actually, this is just to gain authorization from you to get emails and write emails as behalf of you.
