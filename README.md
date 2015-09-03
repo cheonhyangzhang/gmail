@@ -1,6 +1,5 @@
 # gmail
 ## Note
-I am curerntly working to migrate this project to use Polymer 1.0. The migration work is still WIP.
 The Polymer 1.0 version has been moved to [this repo](https://github.com/cheonhyangzhang/paper-gmail).
 
 ## Overview
